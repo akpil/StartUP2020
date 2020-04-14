@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
     [Header("Fire bolt")]
     [SerializeField]
-    private GameObject Bolt;
+    private BoltPool mBoltPool;
     [SerializeField]
     private Transform mBoltPos;
     [SerializeField]
@@ -48,8 +48,8 @@ public class Player : MonoBehaviour
 
         if(Input.GetButton("Fire1") && mCurrentFireLate >= mFireLate)
         {
-            GameObject obj = Instantiate(Bolt);
-            obj.transform.position = mBoltPos.position;
+            Bolt bolt = mBoltPool.GetFromPool();
+            bolt.gameObject.transform.position = mBoltPos.position;
             mCurrentFireLate = 0;
         }
         else
