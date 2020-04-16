@@ -11,9 +11,10 @@ public class Enemy : MonoBehaviour
     private Transform mBoltPos;
     [SerializeField]
     private BoltPool mBoltPool;
+    public BoltPool BoltPool{ set { mBoltPool = value; } }
     [SerializeField]
     private float mFireRate;
-
+    
     private void Awake()
     {
         mRB = GetComponent<Rigidbody>();
@@ -70,6 +71,23 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(.5f, 1));
             //직진
             mRB.velocity -= Vector3.right * direction;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        bool isBolt = other.gameObject.CompareTag("Bolt");
+        bool isPlayer = other.gameObject.CompareTag("Player");
+        if (isBolt || isPlayer)
+        {
+            gameObject.SetActive(false);
+            //Add score
+            //Add effect
+            //Add sound
+            if(isBolt)
+            {
+                other.gameObject.SetActive(false);
+            }
         }
     }
 }

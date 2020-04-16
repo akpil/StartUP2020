@@ -7,6 +7,8 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private AsteroidPool mAstPool;
     [SerializeField]
+    private EnemyPool mEnemyPool;
+    [SerializeField]
     private float mSpawnXMin, mSpawnXMax, mSpawnZ;
     [SerializeField]
     private float mSpawnRate;
@@ -20,17 +22,55 @@ public class GameController : MonoBehaviour
 
     private IEnumerator SpawnHazard()
     {
-        while(true)
+        WaitForSeconds pointThree = new WaitForSeconds(0.3f);
+        WaitForSeconds spawnRate = new WaitForSeconds(mSpawnRate);
+        int enemyCount = 3;
+        int astCount = 10;
+        int currentAstCount;
+        int currentEnemyCount;
+        float ratio = 1f / 3;
+        while (true)
         {
-            for (int i = 0; i < 5; i++)
+            currentAstCount = astCount;
+            currentEnemyCount = enemyCount;
+            while (currentAstCount > 0 && currentEnemyCount > 0)
+            {
+                float rand = Random.Range(0, 1f);
+                if (rand < ratio)
+                {
+                    Enemy enemy = mEnemyPool.GetFromPool();
+                    enemy.transform.position = new Vector3(Random.Range(mSpawnXMin, mSpawnXMax),
+                                                         0,
+                                                         mSpawnZ);
+                    currentEnemyCount--;
+                }
+                else
+                {
+                    AsteroidMovement ast = mAstPool.GetFromPool(Random.Range(0, 3));
+                    ast.transform.position = new Vector3(Random.Range(mSpawnXMin, mSpawnXMax),
+                                                         0,
+                                                         mSpawnZ);
+                    currentAstCount--;
+                }
+                yield return pointThree;
+            }
+            for (int i = 0; i < currentAstCount; i++)
             {
                 AsteroidMovement ast = mAstPool.GetFromPool(Random.Range(0, 3));
                 ast.transform.position = new Vector3(Random.Range(mSpawnXMin, mSpawnXMax),
                                                      0,
                                                      mSpawnZ);
-                yield return new WaitForSeconds(0.3f);
+                yield return pointThree;
             }
-            yield return new WaitForSeconds(mSpawnRate);
+            for(int i = 0; i < currentEnemyCount; i++)
+            {
+                Enemy enemy = mEnemyPool.GetFromPool();
+                enemy.transform.position = new Vector3(Random.Range(mSpawnXMin, mSpawnXMax),
+                                                     0,
+                                                     mSpawnZ);
+                yield return pointThree;
+            }
+            yield return spawnRate;
         }
     }
 
