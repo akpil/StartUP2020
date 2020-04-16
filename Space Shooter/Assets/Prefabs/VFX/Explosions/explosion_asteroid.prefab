@@ -9325,6 +9325,7 @@ GameObject:
   - component: {fileID: 400004}
   - component: {fileID: 19800004}
   - component: {fileID: 19900004}
+  - component: {fileID: -7803275918505695222}
   m_Layer: 0
   m_Name: explosion_asteroid
   m_TagString: Untagged
@@ -14120,6 +14121,19 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &-7803275918505695222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100004}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ecd3b4ae810ca20439b9a1da4f149923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mTime: 1
 --- !u!1 &100008
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,10 +14,17 @@ public class Enemy : MonoBehaviour
     public BoltPool BoltPool{ set { mBoltPool = value; } }
     [SerializeField]
     private float mFireRate;
-    
+
+    private EffectPool mEffectPool;
+    private GameController mGameController;
+
     private void Awake()
     {
         mRB = GetComponent<Rigidbody>();
+        mEffectPool = GameObject.FindGameObjectWithTag("EffectPool").
+                                 GetComponent<EffectPool>();
+        mGameController = GameObject.FindGameObjectWithTag("GameController").
+                                     GetComponent<GameController>();
     }
 
     private void OnEnable()
@@ -81,10 +88,13 @@ public class Enemy : MonoBehaviour
         if (isBolt || isPlayer)
         {
             gameObject.SetActive(false);
-            //Add score
-            //Add effect
+
+            mGameController.AddScore(2);
+
+            Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpEnemy);
+            effect.transform.position = transform.position;
             //Add sound
-            if(isBolt)
+            if (isBolt)
             {
                 other.gameObject.SetActive(false);
             }

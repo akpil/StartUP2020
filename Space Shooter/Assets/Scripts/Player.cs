@@ -21,9 +21,16 @@ public class Player : MonoBehaviour
     private float mXMax, mXMin, mZMax, mZMin;
     [SerializeField]
     private float mTilted = 30;
+
+    private EffectPool mEffectPool;
+    private GameController mGameController;
+
     // Start is called before the first frame update
     void Start()
     {
+        mEffectPool = GameObject.FindGameObjectWithTag("EffectPool").GetComponent<EffectPool>();
+        mGameController = GameObject.FindGameObjectWithTag("GameController").
+                                     GetComponent<GameController>();
         mRB = GetComponent<Rigidbody>();
         mCurrentFireLate = mFireLate;
     }
@@ -55,6 +62,17 @@ public class Player : MonoBehaviour
         else
         {
             mCurrentFireLate += Time.deltaTime;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if(other.gameObject.CompareTag("Enemy"))
+        {
+            gameObject.SetActive(false);
+
+            Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpPlayer);
+            effect.transform.position = transform.position;
         }
     }
 }

@@ -5,6 +5,8 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     [SerializeField]
+    private int mScore;
+    [SerializeField]
     private AsteroidPool mAstPool;
     [SerializeField]
     private EnemyPool mEnemyPool;
@@ -19,6 +21,11 @@ public class GameController : MonoBehaviour
         StartCoroutine(SpawnHazard());
     }
     
+    public void AddScore(int amount)
+    {
+        mScore += amount;
+        //UI
+    }
 
     private IEnumerator SpawnHazard()
     {

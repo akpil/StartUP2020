@@ -6,11 +6,16 @@ public class AsteroidMovement : MonoBehaviour
 {
     private Rigidbody mRB;
     [SerializeField]
-    private float mTorque, mSpeed;
-
+    private float mTorque, mSpeed;    
+    private EffectPool mEffectPool;
+    private GameController mGameController;
     private void Awake()
     {
         mRB = GetComponent<Rigidbody>();
+        GameObject effectPool = GameObject.FindGameObjectWithTag("EffectPool");
+        mEffectPool = effectPool.GetComponent<EffectPool>();
+        mGameController = GameObject.FindGameObjectWithTag("GameController").
+                                     GetComponent<GameController>();
     }
 
     private void OnEnable()
@@ -29,14 +34,21 @@ public class AsteroidMovement : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Bolt") ||
-            other.gameObject.CompareTag("Player"))
+        bool isBolt = other.gameObject.CompareTag("Bolt");
+        bool isPlayer = other.gameObject.CompareTag("Player");
+        if (isBolt || isPlayer)
         {
-            gameObject.SetActive(false);
-            //Add score
-            //Add effect
+            mGameController.AddScore(1);
+
+            Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpAst);
+            effect.transform.position = transform.position;
+
             //Add sound
-            other.gameObject.SetActive(false);
+            if (isBolt)
+            {
+                other.gameObject.SetActive(false);
+            }
+            gameObject.SetActive(false);
         }
     }
 }
