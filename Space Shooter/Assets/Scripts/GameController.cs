@@ -1,11 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
     [SerializeField]
     private int mScore;
+    private bool mbGameOver;
+    [SerializeField]
+    private Player mPlayer;
+    [SerializeField]
+    private UIController mUIController;
+    [Header("EnemySpawn")]
     [SerializeField]
     private AsteroidPool mAstPool;
     [SerializeField]
@@ -15,16 +22,47 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private float mSpawnRate;
     private float mCurrentSpawnRate;
+    private Coroutine mHazardRoutine;
     // Start is called before the first frame update
     void Start()
     {
-        StartCoroutine(SpawnHazard());
+        mUIController.ShowScore(mScore);
+        mUIController.ShowMessagetext("");
+        mUIController.ShowRestart(false);
+        mHazardRoutine = StartCoroutine(SpawnHazard());
     }
     
     public void AddScore(int amount)
     {
         mScore += amount;
-        //UI
+        mUIController.ShowScore(mScore);
+    }
+
+    public void Restart()
+    {
+        SceneManager.LoadScene(0);
+        //mbGameOver = false;
+        //mScore = 0;
+        //mPlayer.transform.position = Vector3.zero;
+        //mPlayer.gameObject.SetActive(true);
+        //if (mHazardRoutine == null)
+        //{
+        //    mHazardRoutine = StartCoroutine(SpawnHazard());
+        //}
+        //mUIController.ShowScore(mScore);
+        //mUIController.ShowMessagetext("");
+        //mUIController.ShowRestart(false);
+    }
+
+    public void PlayerDie()
+    {
+        StopCoroutine(mHazardRoutine);
+        mHazardRoutine = null;
+        mbGameOver = true;
+        //최종 스코어 표시(게임오버 표시 밑에)
+
+        mUIController.ShowMessagetext("Game Over");
+        mUIController.ShowRestart(true);
     }
 
     private IEnumerator SpawnHazard()
@@ -84,6 +122,9 @@ public class GameController : MonoBehaviour
 
     private void Update()
     {
-        new WaitForSeconds(5);
+        if(mbGameOver && Input.GetKeyDown(KeyCode.R))
+        {
+            Restart();
+        }
     }
 }

@@ -17,6 +17,7 @@ public class Enemy : MonoBehaviour
 
     private EffectPool mEffectPool;
     private GameController mGameController;
+    private SoundController mSoundController;
 
     private void Awake()
     {
@@ -25,6 +26,8 @@ public class Enemy : MonoBehaviour
                                  GetComponent<EffectPool>();
         mGameController = GameObject.FindGameObjectWithTag("GameController").
                                      GetComponent<GameController>();
+        mSoundController = GameObject.FindGameObjectWithTag("SoundController").
+                                     GetComponent<SoundController>();
     }
 
     private void OnEnable()
@@ -46,6 +49,7 @@ public class Enemy : MonoBehaviour
             Bolt bolt = mBoltPool.GetFromPool();
             bolt.transform.position = mBoltPos.position;
             bolt.transform.rotation = mBoltPos.rotation;
+            mSoundController.PlayEffectSound((int)eSFXType.FireEnemy);
         }
     }
 
@@ -93,7 +97,9 @@ public class Enemy : MonoBehaviour
 
             Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpEnemy);
             effect.transform.position = transform.position;
-            //Add sound
+
+            mSoundController.PlayEffectSound((int)eSFXType.ExpEnemy);
+
             if (isBolt)
             {
                 other.gameObject.SetActive(false);
