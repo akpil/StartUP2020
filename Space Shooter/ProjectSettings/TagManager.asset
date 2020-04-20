@@ -10,6 +10,7 @@ TagManager:
   - EffectPool
   - SoundController
   - EnemyBolt
+  - Item
   layers:
   - Default
   - TransparentFX

@@ -12,6 +12,10 @@ public class GameController : MonoBehaviour
     private Player mPlayer;
     [SerializeField]
     private UIController mUIController;
+    [SerializeField]
+    private ItemPool mItemPool;
+    [SerializeField]
+    private int mItemSpawnWaveCount;
     [Header("EnemySpawn")]
     [SerializeField]
     private AsteroidPool mAstPool;
@@ -73,6 +77,7 @@ public class GameController : MonoBehaviour
         int astCount = 10;
         int currentAstCount;
         int currentEnemyCount;
+        int currentItemWaveCount = 0;
         float ratio = 1f / 3;
         while (true)
         {
@@ -114,6 +119,18 @@ public class GameController : MonoBehaviour
                                                      0,
                                                      mSpawnZ);
                 yield return pointThree;
+            }
+            if(currentItemWaveCount >= mItemSpawnWaveCount - 1)
+            {
+                Item tem = mItemPool.GetFromPool(Random.Range(0, 3));
+                tem.transform.position = new Vector3(Random.Range(mSpawnXMin, mSpawnXMax),
+                                                         0,
+                                                         mSpawnZ);
+                currentItemWaveCount = 0;
+            }
+            else
+            {
+                currentItemWaveCount++;
             }
             yield return spawnRate;
         }

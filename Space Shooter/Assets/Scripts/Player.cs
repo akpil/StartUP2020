@@ -12,6 +12,14 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float mFireLate;
     private float mCurrentFireLate;
+    private int mBoltIndex;
+    [SerializeField]
+    private int mMaxBoltCount;
+    [SerializeField]
+    private float mBoltXGap;
+    [SerializeField]
+    private int mCurrentBoltCount;
+    private Coroutine mBoltChangeRoutine;
 
     private Rigidbody mRB;
     [Header("Movement")]
@@ -36,6 +44,7 @@ public class Player : MonoBehaviour
                                      GetComponent<SoundController>();
         mRB = GetComponent<Rigidbody>();
         mCurrentFireLate = mFireLate;
+        mCurrentBoltCount = 1;
     }
 
     // Update is called once per frame
@@ -58,10 +67,18 @@ public class Player : MonoBehaviour
 
         if(Input.GetButton("Fire1") && mCurrentFireLate >= mFireLate)
         {
-            Bolt bolt = mBoltPool.GetFromPool();
-            bolt.gameObject.transform.position = mBoltPos.position;
-            bolt.gameObject.transform.rotation = mBoltPos.rotation;
-            bolt.ReSetDir();
+            float currentXStart = - mBoltXGap * ((mCurrentBoltCount - 1) / 2);
+            Vector3 XPos = new Vector3(currentXStart, 0, 0);
+
+            for(int i = 0; i < mCurrentBoltCount; i++)
+            {
+                Bolt bolt = mBoltPool.GetFromPool(mBoltIndex);
+                bolt.gameObject.transform.position = mBoltPos.position + XPos;
+                bolt.gameObject.transform.rotation = mBoltPos.rotation;
+                bolt.ReSetDir();
+                XPos.x += mBoltXGap;
+            }
+            
             mCurrentFireLate = 0;
             mSoundController.PlayEffectSound((int)eSFXType.FirePlayer);
         }
@@ -69,6 +86,23 @@ public class Player : MonoBehaviour
         {
             mCurrentFireLate += Time.deltaTime;
         }
+    }
+    
+    public void StartHoming(float time)
+    {
+        if(mBoltChangeRoutine != null)
+        {
+            StopCoroutine(mBoltChangeRoutine);
+        }
+        mBoltChangeRoutine = StartCoroutine(ChangeBoltID(1, time));
+    }
+
+    private IEnumerator ChangeBoltID(int id, float gap)
+    {
+        mBoltIndex += id;
+        yield return new WaitForSeconds(gap);
+        mBoltIndex -= id;
+        mBoltChangeRoutine = null;
     }
 
     private void OnTriggerEnter(Collider other)
