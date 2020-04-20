@@ -4,14 +4,18 @@ using UnityEngine;
 
 public class Bolt : MonoBehaviour
 {
-    private Rigidbody mRB;
+    protected Rigidbody mRB;
     [SerializeField]
-    private float mSpeed;
+    protected float mSpeed;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         mRB = GetComponent<Rigidbody>();
-        mRB.velocity = transform.forward * mSpeed;
+        ReSetDir();
     }
 
+    public void ReSetDir()
+    {
+        mRB.velocity = transform.forward * mSpeed;
+    }
 }

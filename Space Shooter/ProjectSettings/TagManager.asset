@@ -9,6 +9,7 @@ TagManager:
   - Enemy
   - EffectPool
   - SoundController
+  - EnemyBolt
   layers:
   - Default
   - TransparentFX

@@ -49,6 +49,7 @@ public class Enemy : MonoBehaviour
             Bolt bolt = mBoltPool.GetFromPool();
             bolt.transform.position = mBoltPos.position;
             bolt.transform.rotation = mBoltPos.rotation;
+            bolt.ReSetDir();
             mSoundController.PlayEffectSound((int)eSFXType.FireEnemy);
         }
     }

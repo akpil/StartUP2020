@@ -60,6 +60,8 @@ public class Player : MonoBehaviour
         {
             Bolt bolt = mBoltPool.GetFromPool();
             bolt.gameObject.transform.position = mBoltPos.position;
+            bolt.gameObject.transform.rotation = mBoltPos.rotation;
+            bolt.ReSetDir();
             mCurrentFireLate = 0;
             mSoundController.PlayEffectSound((int)eSFXType.FirePlayer);
         }
@@ -71,7 +73,8 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Enemy"))
+        if(other.gameObject.CompareTag("Enemy") || 
+           other.gameObject.CompareTag("EnemyBolt"))
         {
             gameObject.SetActive(false);
             mGameController.PlayerDie();

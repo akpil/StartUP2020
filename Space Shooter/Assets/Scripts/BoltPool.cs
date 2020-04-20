@@ -5,26 +5,30 @@ using UnityEngine;
 public class BoltPool : MonoBehaviour
 {
     [SerializeField]
-    private Bolt mPrefab;
-    private List<Bolt> mPool;
+    private Bolt[] mPrefab;
+    private List<Bolt>[] mPool;
     // Start is called before the first frame update
     void Start()
     {
-        mPool = new List<Bolt>();
+        mPool = new List<Bolt>[mPrefab.Length];
+        for(int i = 0; i < mPool.Length; i++)
+        {
+            mPool[i] = new List<Bolt>();
+        }
     }
 
-    public Bolt GetFromPool()
+    public Bolt GetFromPool(int id = 0)
     {
-        for(int i = 0; i < mPool.Count; i++)
+        for(int i = 0; i < mPool[id].Count; i++)
         {
-            if(!mPool[i].gameObject.activeInHierarchy)
+            if(!mPool[id][i].gameObject.activeInHierarchy)
             {
-                mPool[i].gameObject.SetActive(true);
-                return mPool[i];
+                mPool[id][i].gameObject.SetActive(true);
+                return mPool[id][i];
             }
         }
-        Bolt newObj = Instantiate(mPrefab);
-        mPool.Add(newObj);
+        Bolt newObj = Instantiate(mPrefab[id]);
+        mPool[id].Add(newObj);
         return newObj;
     }
 }
