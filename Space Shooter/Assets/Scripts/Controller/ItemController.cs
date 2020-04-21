@@ -28,7 +28,7 @@ public class ItemController : MonoBehaviour
     }
     private void AddLife()
     {
-        Debug.Log("add life");
+        mPlayer.AddLife();
     }
     private void SetHoming()
     {
@@ -36,6 +36,6 @@ public class ItemController : MonoBehaviour
     }
     private void AddMoreBolt()
     {
-        Debug.Log("more bolt");
+        mPlayer.AddBoltCount();
     }
 }

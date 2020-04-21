@@ -7,7 +7,25 @@ public class UIController : MonoBehaviour
 {
     [SerializeField]
     private Text mScoreText, mMessageText, mRestartText;
-    
+
+    [SerializeField]
+    private GameObject[] mLifeObjArr;
+
+    public void ShowLife(int life)
+    {
+        for (int i = 0; i < mLifeObjArr.Length; i++)
+        {
+            if(i < life)
+            {
+                mLifeObjArr[i].SetActive(true);
+            }
+            else
+            {
+                mLifeObjArr[i].SetActive(false);
+            }
+        }
+    }
+
     public void ShowScore(int amout)
     {
         mScoreText.text = "Score: " + amout.ToString();

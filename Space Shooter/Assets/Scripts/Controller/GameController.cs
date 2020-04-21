@@ -22,6 +22,8 @@ public class GameController : MonoBehaviour
     [SerializeField]
     private EnemyPool mEnemyPool;
     [SerializeField]
+    private Boss mBoss;
+    [SerializeField]
     private float mSpawnXMin, mSpawnXMax, mSpawnZ;
     [SerializeField]
     private float mSpawnRate;
@@ -34,6 +36,7 @@ public class GameController : MonoBehaviour
         mUIController.ShowMessagetext("");
         mUIController.ShowRestart(false);
         mHazardRoutine = StartCoroutine(SpawnHazard());
+        mPlayer.Init(this, mUIController);
     }
     
     public void AddScore(int amount)
@@ -132,7 +135,19 @@ public class GameController : MonoBehaviour
             {
                 currentItemWaveCount++;
             }
+
+
             yield return spawnRate;
+
+            {
+                mBoss.gameObject.SetActive(true);
+                while (mBoss.IsAlive())
+                {
+                    yield return pointThree;
+                }
+
+                yield return spawnRate;
+            }
         }
     }
 

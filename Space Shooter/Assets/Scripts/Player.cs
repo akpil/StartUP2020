@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField]
+    private int mMaxLife, mCurrentLife;
+    private EffectPool mEffectPool;
+    private GameController mGameController;
+    private SoundController mSoundController;
+    private UIController mUIController;
+
     [Header("Fire bolt")]
     [SerializeField]
     private BoltPool mBoltPool;
@@ -29,22 +36,23 @@ public class Player : MonoBehaviour
     private float mXMax, mXMin, mZMax, mZMin;
     [SerializeField]
     private float mTilted = 30;
-
-    private EffectPool mEffectPool;
-    private GameController mGameController;
-    private SoundController mSoundController;
-
+    
     // Start is called before the first frame update
     void Start()
     {
         mEffectPool = GameObject.FindGameObjectWithTag("EffectPool").GetComponent<EffectPool>();
-        mGameController = GameObject.FindGameObjectWithTag("GameController").
-                                     GetComponent<GameController>();
         mSoundController = GameObject.FindGameObjectWithTag("SoundController").
                                      GetComponent<SoundController>();
-        mRB = GetComponent<Rigidbody>();
+        mRB = GetComponent<Rigidbody>();   
+    }
+
+    public void Init(GameController gameController, UIController uiController)
+    {
+        mGameController = gameController;
+        mUIController = uiController;
         mCurrentFireLate = mFireLate;
         mCurrentBoltCount = 1;
+        mUIController.ShowLife(mCurrentLife);
     }
 
     // Update is called once per frame
@@ -105,16 +113,38 @@ public class Player : MonoBehaviour
         mBoltChangeRoutine = null;
     }
 
+    public void AddBoltCount()
+    {
+        if(mCurrentBoltCount < mMaxBoltCount)
+        {
+            mCurrentBoltCount++;
+        }
+    }
+
+    public void AddLife()
+    {
+        if (mCurrentLife < mMaxLife)
+        {
+            mCurrentLife++;
+            mUIController.ShowLife(mCurrentLife);
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("Enemy") || 
            other.gameObject.CompareTag("EnemyBolt"))
         {
-            gameObject.SetActive(false);
-            mGameController.PlayerDie();
-            Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpPlayer);
-            effect.transform.position = transform.position;
-            mSoundController.PlayEffectSound((int)eSFXType.ExpPlayer);
+            mCurrentLife--;
+            mUIController.ShowLife(mCurrentLife);
+            if (mCurrentLife <= 0)
+            {
+                gameObject.SetActive(false);
+                mGameController.PlayerDie();
+                Timer effect = mEffectPool.GetFromPool((int)eEffectType.ExpPlayer);
+                effect.transform.position = transform.position;
+                mSoundController.PlayEffectSound((int)eSFXType.ExpPlayer);
+            }
         }
     }
 }
