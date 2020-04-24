@@ -7,10 +7,23 @@ public class Player : MonoBehaviour
     private Animator mAnim;
     [SerializeField]
     private float mJumpForce;
+    [SerializeField]
+    private AttackArea mAttackArea;
+    [SerializeField]
+    private float mAtk;
+    private float mMaxHP;
+    private float mCurrentHP;
+
     // Start is called before the first frame update
     void Start()
     {
         mAnim = GetComponent<Animator>();
+        mAttackArea.SetDamage(mAtk);
+    }
+
+    public void Hit(float damage)
+    {
+        Debug.Log("Hit " + damage);
     }
 
     // Update is called once per frame

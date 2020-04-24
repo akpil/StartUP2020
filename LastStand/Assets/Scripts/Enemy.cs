@@ -24,6 +24,8 @@ public class Enemy : MonoBehaviour
     private eEnemyState mState;
     private int mDelayCount;
 
+    private Player mTarget;
+
     private void Awake()
     {
         mAnim = GetComponent<Animator>();
@@ -35,13 +37,36 @@ public class Enemy : MonoBehaviour
         mAnim.SetBool(AnimHash.Dead, false);
         mCurrentHP = mMaxHP;
         mState = eEnemyState.Idle;
+        
+    }
+
+    public void StartMoving()
+    {
         StartCoroutine(StateMachine());
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Attack()
     {
-        
+        mTarget.Hit(1);
+    }
+    public void AttackFinish()
+    {
+        mAnim.SetBool(AnimHash.Attack, false);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            if(mTarget == null)
+            {
+                mTarget = collision.gameObject.GetComponent<Player>();
+            }
+            mState = eEnemyState.Attack;
+            mDelayCount = 0;
+            mAnim.SetBool(AnimHash.Walk, false);
+            //collision.gameObject.SendMessage("Hit", 1, SendMessageOptions.DontRequireReceiver);
+        }
     }
 
     private IEnumerator StateMachine()
@@ -78,6 +103,15 @@ public class Enemy : MonoBehaviour
                     }
                     break;
                 case eEnemyState.Attack:
+                    if(mDelayCount >= 30)
+                    {
+                        mAnim.SetBool(AnimHash.Attack, true);
+                        mDelayCount = 0;
+                    }
+                    else
+                    {
+                        mDelayCount++;
+                    }
                     break;
                 case eEnemyState.Die:
                     break;
