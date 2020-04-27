@@ -8,10 +8,20 @@ public class IngameController : MonoBehaviour
     private EnemyPool mEnemyPool;
     [SerializeField]
     private Transform mLeftPos, mRightPos;
+
+    [SerializeField]
+    private IngameUIController mUIController;
+    private float mCoin;
     // Start is called before the first frame update
     void Start()
     {
         StartCoroutine(SpawnEnemy());
+    }
+
+    public void AddCoin(float value)
+    {
+        mCoin += value;
+        mUIController.ShowCoin(mCoin);
     }
 
     private IEnumerator SpawnEnemy()

@@ -19,13 +19,17 @@ public class Enemy : MonoBehaviour
     [SerializeField]
     private int mAtk;
     [SerializeField]
-    private int mMaxHP;
-    private int mCurrentHP;
+    private float mMaxHP;
+    private float mCurrentHP;
     private eEnemyState mState;
     private int mDelayCount;
 
+    [SerializeField]
+    private float mReward;
+
     private Player mTarget;
 
+    private IngameController mController;
     private void Awake()
     {
         mAnim = GetComponent<Animator>();
@@ -37,7 +41,12 @@ public class Enemy : MonoBehaviour
         mAnim.SetBool(AnimHash.Dead, false);
         mCurrentHP = mMaxHP;
         mState = eEnemyState.Idle;
-        
+        mDelayCount = 0;
+    }
+
+    public void SetIngameController(IngameController controller)
+    {
+        mController = controller;
     }
 
     public void StartMoving()
@@ -45,9 +54,20 @@ public class Enemy : MonoBehaviour
         StartCoroutine(StateMachine());
     }
 
+    public void Hit(float amount)
+    {
+        mCurrentHP -= amount;
+        if(mCurrentHP <= 0)
+        {
+            mState = eEnemyState.Die;
+            mDelayCount = 0;
+            mController.AddCoin(mReward);
+        }
+    }
+
     public void Attack()
     {
-        mTarget.Hit(1);
+        mTarget.Hit(mAtk);
     }
     public void AttackFinish()
     {
@@ -114,6 +134,20 @@ public class Enemy : MonoBehaviour
                     }
                     break;
                 case eEnemyState.Die:
+                    if(mDelayCount == 0)
+                    {
+                        mAnim.SetBool(AnimHash.Dead, true);
+                        mDelayCount++;
+                        //포인트 획득 이펙트
+                    }
+                    else if(mDelayCount >= 10)
+                    {
+                        gameObject.SetActive(false);
+                    }
+                    else
+                    {
+                        mDelayCount++;
+                    }
                     break;
                 default:
                     Debug.LogError("wrong state: " + mState);

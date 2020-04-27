@@ -104,8 +104,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mSpeed: 1
-  mAtk: 0
-  mMaxHP: 0
+  mAtk: 1
+  mMaxHP: 2
+  mReward: 1.5
 --- !u!1 &3331891202975624666
 GameObject:
   m_ObjectHideFlags: 0

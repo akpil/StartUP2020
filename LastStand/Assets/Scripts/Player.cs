@@ -11,6 +11,7 @@ public class Player : MonoBehaviour
     private AttackArea mAttackArea;
     [SerializeField]
     private float mAtk;
+    [SerializeField]
     private float mMaxHP;
     private float mCurrentHP;
 
@@ -19,16 +20,27 @@ public class Player : MonoBehaviour
     {
         mAnim = GetComponent<Animator>();
         mAttackArea.SetDamage(mAtk);
+        mCurrentHP = mMaxHP;
     }
 
     public void Hit(float damage)
     {
-        Debug.Log("Hit " + damage);
+        mCurrentHP -= damage;
+        Debug.Log(mCurrentHP);
+        if(mCurrentHP <= 0)
+        {
+            mAnim.SetBool(AnimHash.Dead, true);
+            
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (mCurrentHP <= 0 || mAnim.GetBool(AnimHash.Dead))
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
             transform.rotation = Quaternion.Euler(0, 180, 0);

@@ -17,16 +17,8 @@ public class AttackArea : MonoBehaviour
     {
         if(collision.gameObject.CompareTag("Enemy"))
         {
-            //if(!EnteredArr.Contains(collision.gameObject))
-            //{
-            //    EnteredArr.Add(collision.gameObject);
-            //}
-            //EnteredArr[0].SendMessage("Hit", mDamage);
-            //if(!EnteredArr[0].activeInHierarchy)
-            //{
-            //    EnteredArr.RemoveAt(0);
-            //}
-            Debug.Log("Attack enemy" + mDamage);
+            collision.gameObject.GetComponent<Enemy>().Hit(mDamage);
+
         }
     }
 }
