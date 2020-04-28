@@ -12,6 +12,8 @@ public enum eEnemyState
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField]
+    private Transform mHPBarPos;
     private Animator mAnim;
     private Rigidbody2D mRB2D;
     [SerializeField]
@@ -57,11 +59,16 @@ public class Enemy : MonoBehaviour
     public void Hit(float amount)
     {
         mCurrentHP -= amount;
+        //show HPBar
         if(mCurrentHP <= 0)
         {
             mState = eEnemyState.Die;
             mDelayCount = 0;
             mController.AddCoin(mReward);
+            TextEffect textEffect = mController.GetTextEffect();
+            textEffect.ShowText(mReward);
+            //textEffect.transform.position = mHPBarPos.position;
+            textEffect.transform.position = Camera.main.WorldToScreenPoint(mHPBarPos.position);
         }
     }
 
