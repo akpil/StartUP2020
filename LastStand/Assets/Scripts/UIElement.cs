@@ -13,8 +13,9 @@ public class UIElement : MonoBehaviour
     [SerializeField]
     private Button mPurchaseButton;
 
-    public void Init(int id, string name, string contents, int level, double cost, Delegates.IntInVoidReturn callback)
+    public void Init(Sprite icon, int id, string name, string contents, int level, double cost, Delegates.IntInVoidReturn callback)
     {
+        mIconImage.sprite = icon;
         mID = id;
         mTitleText.text = name;
         mContentsText.text = contents;

@@ -13,7 +13,10 @@ public class ShopController : MonoBehaviour
     private Button[] mButtonArr;
     [SerializeField]
     private UIElement[] mElementArr;
-
+    [SerializeField]
+    private Sprite[] mSpriteArr;
+    [SerializeField]
+    private Sprite mSprite;
     private Delegates.IntInVoidReturn call;
     private Delegates.VoidCallback mCallBack;
     [SerializeField]
@@ -24,10 +27,12 @@ public class ShopController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        mSpriteArr = Resources.LoadAll<Sprite>("Image/Icons");
+        mSprite = Resources.Load<Sprite>("Image/Icons/Bone (1) 1");
         mText.text = "aaaa";
-        mElementArr[0].Init(0, "공격증가", "공격력이 1 증가합니다.", 0, 10, levelUP);
-        mElementArr[1].Init(1, "방어증가", "방어력이 0.1 증가합니다.", 0, 15, levelUP);
-        mElementArr[2].Init(2, "체력증가", "체력이 1 증가합니다.", 0, 20, levelUP);
+        mElementArr[0].Init(mSpriteArr[0], 0, "공격증가", "공격력이 1 증가합니다.", 0, 10, levelUP);
+        mElementArr[1].Init(mSpriteArr[1], 1, "방어증가", "방어력이 0.1 증가합니다.", 0, 15, levelUP);
+        mElementArr[2].Init(mSpriteArr[2], 2, "체력증가", "체력이 1 증가합니다.", 0, 20, levelUP);
     }
 
     public void ButtonCall()

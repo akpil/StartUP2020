@@ -776,6 +776,8 @@ MonoBehaviour:
   - {fileID: 1320878692}
   - {fileID: 1090277120}
   - {fileID: 42169664}
+  mSpriteArr: []
+  mSprite: {fileID: 0}
   mController: {fileID: 1465761050}
   mDataController: {fileID: 1084600774}
 --- !u!4 &207193496

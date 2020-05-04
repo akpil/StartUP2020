@@ -32,6 +32,8 @@ public class Enemy : MonoBehaviour
     private Player mTarget;
 
     private IngameController mController;
+    private GaugeBar mHPBar;
+
     private void Awake()
     {
         mAnim = GetComponent<Animator>();
@@ -59,16 +61,28 @@ public class Enemy : MonoBehaviour
     public void Hit(float amount)
     {
         mCurrentHP -= amount;
-        //show HPBar
+        if(mHPBar == null)
+        {
+            mHPBar = GaugeBarPool.Instance.GetFromPool();
+        }
         if(mCurrentHP <= 0)
         {
             mState = eEnemyState.Die;
             mDelayCount = 0;
             mController.AddCoin(mReward);
+
+            mHPBar.gameObject.SetActive(false);
+            mHPBar = null;
+
             TextEffect textEffect = mController.GetTextEffect();
             textEffect.ShowText(mReward);
-            //textEffect.transform.position = mHPBarPos.position;
-            textEffect.transform.position = Camera.main.WorldToScreenPoint(mHPBarPos.position);
+            textEffect.transform.position = mHPBarPos.position;
+            //textEffect.transform.position = Camera.main.WorldToScreenPoint(mHPBarPos.position);
+        }
+        else
+        {
+            mHPBar.SetGauge(mCurrentHP, mMaxHP);
+            mHPBar.transform.position = mHPBarPos.position;
         }
     }
 

@@ -7,6 +7,12 @@ public class EnemyPool : ObjectPool<Enemy>
     [SerializeField]
     IngameController mIngameController;
 
+    private void Awake()
+    {
+        mOriginArr = Resources.LoadAll<Enemy>("Prefab");
+        PoolSetup();
+    }
+
     protected override Enemy CreateNewObj(int id)
     {
         Enemy newEnemy = Instantiate(mOriginArr[id]);
