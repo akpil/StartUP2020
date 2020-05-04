@@ -18,6 +18,8 @@ public class ShopController : MonoBehaviour
     private Delegates.VoidCallback mCallBack;
     [SerializeField]
     private GameController mController;
+    [SerializeField]
+    private GameDataController mDataController;
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +49,8 @@ public class ShopController : MonoBehaviour
     public void levelUP(int id)
     {
         Debug.Log("level up: " + id);
+        mDataController.AddAtk(1);
+        GameDataController.Instance.AddAtk(1);
     }
 
     public void GoldSpend1()

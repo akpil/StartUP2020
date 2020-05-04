@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class IngameUIController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class IngameUIController : MonoBehaviour
     private Button mButton;
     private void Awake()
     {
-        mButton.onClick.AddListener(ShowLog);
+        //mButton.onClick.AddListener(ShowLog);
     }
 
     public float Coin
@@ -20,6 +21,11 @@ public class IngameUIController : MonoBehaviour
         {
             mCoinText.text = value.ToString();
         }
+    }
+
+    public void LoadScene()
+    {
+        SceneManager.LoadScene(0);
     }
 
     public void ShowLog()

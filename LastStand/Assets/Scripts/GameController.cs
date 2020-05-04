@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -21,6 +22,10 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void LoadScene()
+    {
+        SceneManager.LoadScene(1);
+    }
 
     //public Delegates.VoidCallback GoldSpendCallback { get; set; }
     //public float Gold
