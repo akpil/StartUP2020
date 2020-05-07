@@ -62,7 +62,7 @@ public class TouchManager : MonoBehaviour
                 {
                     GameObject gameObj = Instantiate(mDummy);
                     gameObj.transform.position = hit.point;
-                    //TODO Gamecontroller Touch
+                    GameController.Instance.Touch();
                 }
             }
             //LayerMask aa = LayerMask.NameToLayer("Building") + LayerMask.NameToLayer("Enemy");
@@ -75,8 +75,9 @@ public class TouchManager : MonoBehaviour
         Vector3 pos;
         if(CheckTouch(out pos))
         {
-            // TODO Gamecontroller touch 
-            // set effectPos
+            GameObject gameObj = Instantiate(mDummy);
+            gameObj.transform.position = pos;
+            GameController.Instance.Touch();
         }
         
     }
