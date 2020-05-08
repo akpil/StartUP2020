@@ -7,6 +7,33 @@ public class GameController : MonoBehaviour
 {
     public static GameController Instance;
 
+    private double mGold;
+    public Delegates.VoidCallback GoldCallback;
+    public double Gold
+    {
+        get { return mGold; }
+        set
+        {
+            if(value >= 0)
+            {
+                mGold = value;
+                if(GoldCallback != null)
+                {
+                    GoldCallback();
+                }
+            }
+            else
+            {
+                Debug.Log("not enough gold");
+            }
+            GoldCallback = null;
+        }
+    }
+
+    [SerializeField]
+    private double mIncomeWeight = 1.04d;
+    private double mIncome;
+
     private int mCurrentStage;
 
     [SerializeField]
@@ -15,6 +42,21 @@ public class GameController : MonoBehaviour
     private double mMaxProgress;
 
     private double mTouchPower;
+    public double TouchPower
+    {
+        get { return mTouchPower; }
+        set
+        {
+            if(value >= 0)
+            {
+                mTouchPower = value;
+            }
+            else
+            {
+                Debug.LogError("Error on touch power update " + value);
+            }
+        }
+    }
 
     [SerializeField]//temp
     private GemPool mGemPool;
@@ -39,29 +81,38 @@ public class GameController : MonoBehaviour
     void Start()
     {
         mCurrentStage = 0;
-        mMaxProgress = 10;
         mTouchPower = 1;
-        mCurrentGem = mGemPool.GetFromPool(UnityEngine.Random.Range(0, Constants.TOTAL_GEM_COUNT));
+        CalcStage();
+        UIController.Instance.ShowGaugeBar(mCurrentProgress, mMaxProgress);
     }
 
-    private void CalcNextStage()
+    private void CalcStage()
     {
-        mCurrentStage++;
         mMaxProgress = 10 * Math.Pow(mProgressWeight, mCurrentStage);
-        mCurrentGem.gameObject.SetActive(false);
+        if(mCurrentGem != null)
+        {
+            mCurrentGem.gameObject.SetActive(false);
+        }
         mCurrentGem = mGemPool.GetFromPool(UnityEngine.Random.Range(0, Constants.TOTAL_GEM_COUNT));
-        mCurrentProgress = 0;
+        mIncome = 5 * Math.Pow(mIncomeWeight, mCurrentStage);
     }
 
     public void Touch()
     {
         if (mCurrentProgress >= mMaxProgress)
         {
-            CalcNextStage();
+            mGold += mIncome;
+            mCurrentStage++;
+            mCurrentProgress = 0;
+            CalcStage();
         }
         else
         {
             mCurrentProgress += mTouchPower;
+            if(mCurrentProgress > mMaxProgress)
+            {
+                mCurrentProgress = mMaxProgress;
+            }
             float progress = (float)(mCurrentProgress / mMaxProgress);
             mCurrentGem.SetProgress(progress);
         }

@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Delegates
+{
+    public delegate void VoidCallback();
+    public delegate void TwoIntInVoidCallback(int value1, int value2);
+}
+
 public class PlayerStat
 {
     public int ID;
