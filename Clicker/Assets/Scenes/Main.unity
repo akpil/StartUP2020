@@ -1293,6 +1293,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2a8716bb3eae047ac2adef5d8b5d4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mInfoArr:
+  - ID: 0
+    CurrentLevel: 1
+    MaxLevel: 500
+    CostType: 0
+    CostBase: 2
+    CostWeight: 1.08
+    CostCurrent: 0
+    IsPercent: 0
+    ValueBase: 1
+    ValueWeight: 1.02
+    ValueCurrent: 0
+    Cooltime: 0
+    Duration: 0
+  - ID: 1
+    CurrentLevel: 0
+    MaxLevel: 50
+    CostType: 0
+    CostBase: 20
+    CostWeight: 1.08
+    CostCurrent: 0
+    IsPercent: 1
+    ValueBase: 0.1
+    ValueWeight: 0.01
+    ValueCurrent: 0
+    Cooltime: 0
+    Duration: 0
+  - ID: 2
+    CurrentLevel: 0
+    MaxLevel: 100
+    CostType: 0
+    CostBase: 50
+    CostWeight: 1.08
+    CostCurrent: 0
+    IsPercent: 1
+    ValueBase: 1
+    ValueWeight: 0.1
+    ValueCurrent: 0
+    Cooltime: 0
+    Duration: 0
+  - ID: 3
+    CurrentLevel: 0
+    MaxLevel: 300
+    CostType: 0
+    CostBase: 100
+    CostWeight: 1.08
+    CostCurrent: 0
+    IsPercent: 0
+    ValueBase: 50
+    ValueWeight: 1.05
+    ValueCurrent: 0
+    Cooltime: 300
+    Duration: 0
+  - ID: 4
+    CurrentLevel: 0
+    MaxLevel: 490
+    CostType: 0
+    CostBase: 200
+    CostWeight: 1.08
+    CostCurrent: 0
+    IsPercent: 1
+    ValueBase: 0.1
+    ValueWeight: 0.01
+    ValueCurrent: 0
+    Cooltime: 0
+    Duration: 0
+  test: []
   mElementPrefab: {fileID: 822877505245418071, guid: 0a7605ff4b4140d45911247ebf59ecd0,
     type: 3}
   mElementArea: {fileID: 1893946566}
