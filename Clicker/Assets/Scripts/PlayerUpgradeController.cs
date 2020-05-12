@@ -10,6 +10,8 @@ public class PlayerUpgradeController : MonoBehaviour
 
     [SerializeField]
     private PlayerStat[] mInfoArr, test;
+    [SerializeField]
+    private PlayerStatText[] mTextInfoArr;
 
     private List<UIElement> mElementList;
     [SerializeField]
@@ -48,7 +50,14 @@ public class PlayerUpgradeController : MonoBehaviour
         for(int i= 0; i < mInfoArr.Length; i++)
         {
             UIElement elem = Instantiate(mElementPrefab, mElementArea);
-            elem.Init(i, null, "test1", "1", "power up", "2", LevelUP);
+            elem.Init(i, null, 
+                      mTextInfoArr[i].Title,
+                      mInfoArr[i].CurrentLevel.ToString(),
+                      string.Format(mTextInfoArr[i].ContentsFormat,
+                                    UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent),
+                                    mInfoArr[i].Duration.ToString()),
+                      UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent),
+                      LevelUP);
             mElementList.Add(elem);
         }
         
@@ -59,16 +68,23 @@ public class PlayerUpgradeController : MonoBehaviour
 
     public void LevelUP(int id, int amount)
     {
-        //mSelectedID = id;
-        //mSelectedAmount = amount;
         Delegates.VoidCallback callback = () => { LevelUpCallback(id, amount); };
         switch (mInfoArr[id].CostType)
         {
             case eCostType.Gold:
-                GameController.Instance.GoldCallback = callback;
-                GameController.Instance.Gold -= mInfoArr[id].CostCurrent;
+                {
+                    GameController.Instance.GoldCallback = callback;
+                    double cost = mInfoArr[id].CostCurrent *
+                                        (Math.Pow(mInfoArr[id].CostWeight, amount) - 1) /
+                                        (mInfoArr[id].CostWeight - 1);
+                    GameController.Instance.Gold -= cost;
+                }
+                
                 break;
             case eCostType.Ruby:
+                {
+                    double cost = 10 * amount;
+                }
                 break;
             case eCostType.Soul:
                 break;
@@ -80,14 +96,16 @@ public class PlayerUpgradeController : MonoBehaviour
 
     public void LevelUpCallback(int id, int level)
     {
-
-        //int id = mSelectedID;
-        //int level = mSelectedAmount;
         mInfoArr[id].CurrentLevel += level;
         if(mInfoArr[id].CurrentLevel == mInfoArr[id].MaxLevel)
         {
-            // 레벨업 잠금
+            mElementList[id].SetButtonActive(false);
         }
+        if(mInfoArr[id].CurrentLevel + 10 > mInfoArr[id].MaxLevel)
+        {
+            mElementList[id].SetTenButtonActive(false);
+        }
+
         mInfoArr[id].CostCurrent = mInfoArr[id].CostBase *
                                 Math.Pow(mInfoArr[id].CostWeight, mInfoArr[id].CurrentLevel);
         if(mInfoArr[id].IsPercent)
@@ -102,6 +120,29 @@ public class PlayerUpgradeController : MonoBehaviour
         }
 
         // 계산된 값 적용 UI, GameLogic
+        if(mInfoArr[id].Cooltime <= 0)
+        {
+            switch(id)
+            {
+                case 0:
+                    GameController.Instance.TouchPower = mInfoArr[id].ValueCurrent;
+                    break;
+                case 1:
+                    GameController.Instance.CriticalRate = mInfoArr[id].ValueCurrent;
+                    break;
+                case 2:
+                    GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
+                    break;
+                default:
+                    Debug.LogError("wrong cooltime value on player stat " + id);
+                    break;
+            }
+        }
+        mElementList[id].Refresh(mInfoArr[id].CurrentLevel.ToString(),
+                      string.Format(mTextInfoArr[id].ContentsFormat,
+                                    UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent),
+                                    mInfoArr[id].Duration.ToString()),
+                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent));
     }
 
 }

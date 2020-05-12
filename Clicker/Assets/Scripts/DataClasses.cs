@@ -29,3 +29,11 @@ public class PlayerStat
     public float Cooltime;
     public float Duration;
 }
+
+[Serializable]
+public class PlayerStatText
+{
+    public int ID;
+    public string Title;
+    public string ContentsFormat;
+}
