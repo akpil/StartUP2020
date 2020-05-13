@@ -2,16 +2,27 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Newtonsoft.Json;
 
-public class PlayerUpgradeController : MonoBehaviour
+public class PlayerUpgradeController : InformationLoader
 {
     public static PlayerUpgradeController Instance;
 
     [SerializeField]
-    private PlayerStat[] mInfoArr, test;
+    private PlayerStat[] mInfoArr;
     [SerializeField]
     private PlayerStatText[] mTextInfoArr;
+
+    public PlayerStat[] GetInfoArr()
+    {
+        return mInfoArr;
+    }
+
+    public PlayerStatText[] GetTextInfoArr()
+    {
+        return mTextInfoArr;
+    }
+
+    private Sprite[] mIconArr;
 
     private List<UIElement> mElementList;
     [SerializeField]
@@ -34,29 +45,31 @@ public class PlayerUpgradeController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //mInfoArr = new PlayerStat[5];
-        //mInfoArr[0] = new PlayerStat();
-        //mInfoArr[0].ID = 0;
-        //mInfoArr[0].CurrentLevel = 1;
-        //mInfoArr[0].CostType = eCostType.Gold;
-        //mInfoArr[0]
+        LoadJson(out mInfoArr, Paths.PLAYER_ITEM_TABLE);
+        LoadJson(out mTextInfoArr, Paths.PLAYER_ITEM_TEXT_TABLE);        
 
-        string data = JsonConvert.SerializeObject(mInfoArr);
-        Debug.Log(data);
-        test = JsonConvert.DeserializeObject<PlayerStat[]>(data);
+        mIconArr = Resources.LoadAll<Sprite>(Paths.PLAYER_ITEM_ICON);
 
         //세이브데이터 불러오기
+
+        for(int i = 0; i < mInfoArr.Length; i++)
+        {
+            mInfoArr[i].CostTenWeight = (Math.Pow(mInfoArr[i].CostWeight, 10) - 1) /
+                                        (mInfoArr[i].CostWeight - 1);
+        }
+
         mElementList = new List<UIElement>();
         for(int i= 0; i < mInfoArr.Length; i++)
         {
             UIElement elem = Instantiate(mElementPrefab, mElementArea);
-            elem.Init(i, null, 
+            elem.Init(i, mIconArr[i],
                       mTextInfoArr[i].Title,
                       mInfoArr[i].CurrentLevel.ToString(),
                       string.Format(mTextInfoArr[i].ContentsFormat,
                                     UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent),
                                     mInfoArr[i].Duration.ToString()),
                       UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent),
+                      UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent * mInfoArr[i].CostTenWeight),
                       LevelUP);
             mElementList.Add(elem);
         }
@@ -73,10 +86,12 @@ public class PlayerUpgradeController : MonoBehaviour
         {
             case eCostType.Gold:
                 {
-                    GameController.Instance.GoldCallback = callback;
-                    double cost = mInfoArr[id].CostCurrent *
-                                        (Math.Pow(mInfoArr[id].CostWeight, amount) - 1) /
-                                        (mInfoArr[id].CostWeight - 1);
+                    GameController.Instance.GoldCallback = callback;                    
+                    double cost = mInfoArr[id].CostCurrent;
+                    if (amount == 10)
+                    {
+                        cost *= mInfoArr[id].CostTenWeight;
+                    }
                     GameController.Instance.Gold -= cost;
                 }
                 
@@ -142,7 +157,9 @@ public class PlayerUpgradeController : MonoBehaviour
                       string.Format(mTextInfoArr[id].ContentsFormat,
                                     UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent),
                                     mInfoArr[id].Duration.ToString()),
-                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent));
+                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent),
+                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent *
+                                    mInfoArr[id].CostTenWeight));
     }
 
 }

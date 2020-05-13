@@ -995,6 +995,7 @@ MonoBehaviour:
   mLevelText: {fileID: 2725098967437613276}
   mContentsText: {fileID: 2725098967969838422}
   mCostText: {fileID: 2725098968682295216}
+  mTenCostText: {fileID: 4330115805773926584}
   mButton: {fileID: 2725098967080419041}
   mTenUpButton: {fileID: 3131638629728983991}
 --- !u!1 &2725098969100528718

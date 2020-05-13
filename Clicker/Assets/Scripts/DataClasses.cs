@@ -20,6 +20,7 @@ public class PlayerStat
     public double CostBase;
     public double CostWeight;
     public double CostCurrent;
+    public double CostTenWeight;
 
     public bool IsPercent;
     public double ValueBase;

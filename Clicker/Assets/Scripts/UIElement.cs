@@ -9,7 +9,7 @@ public class UIElement : MonoBehaviour
     [SerializeField]
     private Image mIconImage;
     [SerializeField]
-    private TextMeshProUGUI mTitleText, mLevelText, mContentsText, mCostText;
+    private TextMeshProUGUI mTitleText, mLevelText, mContentsText, mCostText, mTenCostText;
     [SerializeField]
     private Button mButton, mTenUpButton;
 
@@ -23,12 +23,13 @@ public class UIElement : MonoBehaviour
                      string level,
                      string contents,
                      string cost,
+                     string tenCost,
                      Delegates.TwoIntInVoidCallback callback)
     {
         mID = id;
         mIconImage.sprite = icon;
         mTitleText.text = title;
-        Refresh(level, contents, cost);
+        Refresh(level, contents, cost, tenCost);
 
         mButton.onClick.AddListener(() => 
         {
@@ -47,11 +48,12 @@ public class UIElement : MonoBehaviour
         });
     }
 
-    public void Refresh(string level, string contents, string cost)
+    public void Refresh(string level, string contents, string cost, string tenCost)
     {
         mLevelText.text = level;
         mContentsText.text = contents;
         mCostText.text = cost;
+        mTenCostText.text = tenCost;
     }
 
     public void SetButtonActive(bool isActive)
