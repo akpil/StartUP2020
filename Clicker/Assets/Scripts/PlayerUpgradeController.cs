@@ -7,6 +7,7 @@ public class PlayerUpgradeController : InformationLoader
 {
     public static PlayerUpgradeController Instance;
 
+    private int[] mLevelArr;
     [SerializeField]
     private PlayerStat[] mInfoArr;
     [SerializeField]
@@ -51,11 +52,15 @@ public class PlayerUpgradeController : InformationLoader
         mIconArr = Resources.LoadAll<Sprite>(Paths.PLAYER_ITEM_ICON);
 
         //세이브데이터 불러오기
+        mLevelArr = GameController.Instance.GetPlayerItemLevelArr();
+        
 
         for(int i = 0; i < mInfoArr.Length; i++)
         {
+            mInfoArr[i].CurrentLevel = mLevelArr[i];
             mInfoArr[i].CostTenWeight = (Math.Pow(mInfoArr[i].CostWeight, 10) - 1) /
                                         (mInfoArr[i].CostWeight - 1);
+            CalcData(i);
         }
 
         mElementList = new List<UIElement>();
@@ -75,9 +80,6 @@ public class PlayerUpgradeController : InformationLoader
         }
         
     }
-
-    private int mSelectedID, mSelectedAmount;
-
 
     public void LevelUP(int id, int amount)
     {
@@ -111,6 +113,7 @@ public class PlayerUpgradeController : InformationLoader
 
     public void LevelUpCallback(int id, int level)
     {
+
         mInfoArr[id].CurrentLevel += level;
         if(mInfoArr[id].CurrentLevel == mInfoArr[id].MaxLevel)
         {
@@ -120,10 +123,26 @@ public class PlayerUpgradeController : InformationLoader
         {
             mElementList[id].SetTenButtonActive(false);
         }
+        mLevelArr[id] = mInfoArr[id].CurrentLevel;
 
+        CalcData(id);
+
+        // 계산된 값 적용 UI, GameLogic
+        
+        mElementList[id].Refresh(mInfoArr[id].CurrentLevel.ToString(),
+                      string.Format(mTextInfoArr[id].ContentsFormat,
+                                    UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent),
+                                    mInfoArr[id].Duration.ToString()),
+                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent),
+                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent *
+                                    mInfoArr[id].CostTenWeight));
+    }
+
+    private void CalcData(int id)
+    {
         mInfoArr[id].CostCurrent = mInfoArr[id].CostBase *
                                 Math.Pow(mInfoArr[id].CostWeight, mInfoArr[id].CurrentLevel);
-        if(mInfoArr[id].IsPercent)
+        if (mInfoArr[id].IsPercent)
         {
             mInfoArr[id].ValueCurrent = mInfoArr[id].ValueBase +
                                 mInfoArr[id].ValueWeight * mInfoArr[id].CurrentLevel;
@@ -134,32 +153,27 @@ public class PlayerUpgradeController : InformationLoader
                                 Math.Pow(mInfoArr[id].ValueWeight, mInfoArr[id].CurrentLevel);
         }
 
-        // 계산된 값 적용 UI, GameLogic
-        if(mInfoArr[id].Cooltime <= 0)
+        if(mInfoArr[id].CurrentLevel > 0)
         {
-            switch(id)
+            if (mInfoArr[id].Cooltime <= 0)
             {
-                case 0:
-                    GameController.Instance.TouchPower = mInfoArr[id].ValueCurrent;
-                    break;
-                case 1:
-                    GameController.Instance.CriticalRate = mInfoArr[id].ValueCurrent;
-                    break;
-                case 2:
-                    GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
-                    break;
-                default:
-                    Debug.LogError("wrong cooltime value on player stat " + id);
-                    break;
+                switch (id)
+                {
+                    case 0:
+                        GameController.Instance.TouchPower = mInfoArr[id].ValueCurrent;
+                        break;
+                    case 1:
+                        GameController.Instance.CriticalRate = mInfoArr[id].ValueCurrent;
+                        break;
+                    case 2:
+                        GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
+                        break;
+                    default:
+                        Debug.LogError("wrong cooltime value on player stat " + id);
+                        break;
+                }
             }
         }
-        mElementList[id].Refresh(mInfoArr[id].CurrentLevel.ToString(),
-                      string.Format(mTextInfoArr[id].ContentsFormat,
-                                    UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent),
-                                    mInfoArr[id].Duration.ToString()),
-                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent),
-                      UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent *
-                                    mInfoArr[id].CostTenWeight));
     }
 
 }

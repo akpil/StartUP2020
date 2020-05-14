@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Delegates
-{
-    public delegate void VoidCallback();
-    public delegate void TwoIntInVoidCallback(int value1, int value2);
-}
+
 
 [Serializable]
 public class PlayerStat
@@ -37,4 +33,16 @@ public class PlayerStatText
     public int ID;
     public string Title;
     public string ContentsFormat;
+}
+
+[Serializable]
+public class SaveData
+{
+    public double Gold;
+
+    public int Stage;
+    public int LastGemID;
+    public double Progress;
+
+    public int[] PlayerItemLevelArr;
 }

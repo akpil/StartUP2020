@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,17 +8,18 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     public static GameController Instance;
+    [SerializeField]
+    private SaveData mUser;
 
-    private double mGold;
     public Delegates.VoidCallback GoldCallback;
     public double Gold
     {
-        get { return mGold; }
+        get { return mUser.Gold; }
         set
         {
             if(value >= 0)
             {
-                mGold = value;
+                mUser.Gold = value;
                 if(GoldCallback != null)
                 {
                     GoldCallback();
@@ -34,11 +37,8 @@ public class GameController : MonoBehaviour
     private double mIncomeWeight = 1.04d;
     private double mIncome;
 
-    private int mCurrentStage;
-
     [SerializeField]
     private double mProgressWeight = 1.08d;
-    private double mCurrentProgress;
     private double mMaxProgress;
 
     private double mTouchPower;
@@ -74,7 +74,7 @@ public class GameController : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            //TODO Load Save data
+            LoadGame();
         }
         else
         {
@@ -84,53 +84,112 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        mCurrentStage = 0;
-        mTouchPower = 1;
-        CalcStage();
-        UIController.Instance.ShowGaugeBar(mCurrentProgress, mMaxProgress);
+        CalcStage(mUser.LastGemID);
+        mCurrentGem.SetProgress((float)(mUser.Progress / mMaxProgress));
+        UIController.Instance.ShowGaugeBar(mUser.Progress, mMaxProgress);
     }
 
-    private void CalcStage()
+    private void LoadGame()
     {
-        mMaxProgress = 10 * Math.Pow(mProgressWeight, mCurrentStage);
+        //string location = Application.streamingAssetsPath + "/SaveData";
+        if(true)//File.Exists(location))
+        {
+            //StreamReader reader = new StreamReader(location);
+            string data = PlayerPrefs.GetString("SaveData");//reader.ReadToEnd();
+            if (string.IsNullOrEmpty(data))
+            {
+                CreateNewSaveData();
+            }
+            else
+            {
+                BinaryFormatter formatter = new BinaryFormatter();
+                MemoryStream stream = new MemoryStream(Convert.FromBase64String(data));
+                mUser = (SaveData)formatter.Deserialize(stream);
+            }
+            //reader.Close();
+        }
+        //else
+        //{
+        //    CreateNewSaveData();
+        //}
+    }
+
+    private void CreateNewSaveData()
+    {
+        mUser = new SaveData();
+        mUser.Gold = 0;
+
+        mUser.Stage = 0;
+        mUser.LastGemID = -1;
+        mUser.Progress = 0;
+
+        mUser.PlayerItemLevelArr = new int[Constants.PLAYER_ITEM_COUNT];
+        mUser.PlayerItemLevelArr[0] = 1;
+    }
+
+    private void Save()
+    {
+        //string location = Application.streamingAssetsPath + "/SaveData";
+        BinaryFormatter formatter = new BinaryFormatter();
+        MemoryStream stream = new MemoryStream();
+        //StreamWriter writer = new StreamWriter(location);
+
+        formatter.Serialize(stream, mUser);
+        string data = Convert.ToBase64String(stream.GetBuffer());
+        PlayerPrefs.SetString("SaveData", data);
+        //writer.Write(data);
+        //writer.Close();
+    }
+
+    private void OnApplicationQuit()
+    {
+        Save();
+    }
+
+    public int[] GetPlayerItemLevelArr()
+    {
+        return mUser.PlayerItemLevelArr;
+    }
+
+    private void CalcStage(int id = -1)
+    {
+        mMaxProgress = 10 * Math.Pow(mProgressWeight, mUser.Stage);
         if(mCurrentGem != null)
         {
             mCurrentGem.gameObject.SetActive(false);
         }
-        mCurrentGem = mGemPool.GetFromPool(UnityEngine.Random.Range(0, Constants.TOTAL_GEM_COUNT));
-        mIncome = 5 * Math.Pow(mIncomeWeight, mCurrentStage);
+        if(mUser.LastGemID < 0)
+        {
+            mUser.LastGemID = UnityEngine.Random.Range(0, Constants.TOTAL_GEM_COUNT);
+        }
+        mCurrentGem = mGemPool.GetFromPool(mUser.LastGemID);
+        mIncome = 5 * Math.Pow(mIncomeWeight, mUser.Stage);
     }
 
     public void Touch()
     {
-        if (mCurrentProgress >= mMaxProgress)
+        if (mUser.Progress >= mMaxProgress)
         {
-            mGold += mIncome;
-            mCurrentStage++;
-            mCurrentProgress = 0;
+            mUser.Gold += mIncome;
+            mUser.Stage++;
+            mUser.Progress = 0;
             CalcStage();
         }
         else
         {
-            mCurrentProgress += mTouchPower;
-            if(mCurrentProgress > mMaxProgress)
+            mUser.Progress += mTouchPower;
+            if(mUser.Progress > mMaxProgress)
             {
-                mCurrentProgress = mMaxProgress;
+                mUser.Progress = mMaxProgress;
             }
-            float progress = (float)(mCurrentProgress / mMaxProgress);
+            float progress = (float)(mUser.Progress / mMaxProgress);
             mCurrentGem.SetProgress(progress);
         }
-        UIController.Instance.ShowGaugeBar(mCurrentProgress, mMaxProgress);
+        UIController.Instance.ShowGaugeBar(mUser.Progress, mMaxProgress);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            mCurrentStage++;
-            mMaxProgress = 10 * Math.Pow(mProgressWeight, mCurrentStage);
-            UIController.Instance.ShowGaugeBar(mCurrentProgress, mMaxProgress);
-        }
     }
 }
