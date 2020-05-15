@@ -5,11 +5,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour
+public class GameController : SaveDataController
 {
     public static GameController Instance;
-    [SerializeField]
-    private SaveData mUser;
+    
 
     public Delegates.VoidCallback GoldCallback;
     public double Gold
@@ -87,59 +86,7 @@ public class GameController : MonoBehaviour
         CalcStage(mUser.LastGemID);
         mCurrentGem.SetProgress((float)(mUser.Progress / mMaxProgress));
         UIController.Instance.ShowGaugeBar(mUser.Progress, mMaxProgress);
-    }
-
-    private void LoadGame()
-    {
-        //string location = Application.streamingAssetsPath + "/SaveData";
-        if(true)//File.Exists(location))
-        {
-            //StreamReader reader = new StreamReader(location);
-            string data = PlayerPrefs.GetString("SaveData");//reader.ReadToEnd();
-            if (string.IsNullOrEmpty(data))
-            {
-                CreateNewSaveData();
-            }
-            else
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                MemoryStream stream = new MemoryStream(Convert.FromBase64String(data));
-                mUser = (SaveData)formatter.Deserialize(stream);
-            }
-            //reader.Close();
-        }
-        //else
-        //{
-        //    CreateNewSaveData();
-        //}
-    }
-
-    private void CreateNewSaveData()
-    {
-        mUser = new SaveData();
-        mUser.Gold = 0;
-
-        mUser.Stage = 0;
-        mUser.LastGemID = -1;
-        mUser.Progress = 0;
-
-        mUser.PlayerItemLevelArr = new int[Constants.PLAYER_ITEM_COUNT];
-        mUser.PlayerItemLevelArr[0] = 1;
-    }
-
-    private void Save()
-    {
-        //string location = Application.streamingAssetsPath + "/SaveData";
-        BinaryFormatter formatter = new BinaryFormatter();
-        MemoryStream stream = new MemoryStream();
-        //StreamWriter writer = new StreamWriter(location);
-
-        formatter.Serialize(stream, mUser);
-        string data = Convert.ToBase64String(stream.GetBuffer());
-        PlayerPrefs.SetString("SaveData", data);
-        //writer.Write(data);
-        //writer.Close();
-    }
+    }    
 
     private void OnApplicationQuit()
     {

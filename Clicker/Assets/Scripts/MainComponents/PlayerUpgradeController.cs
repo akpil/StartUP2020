@@ -67,11 +67,22 @@ public class PlayerUpgradeController : InformationLoader
         for(int i= 0; i < mInfoArr.Length; i++)
         {
             UIElement elem = Instantiate(mElementPrefab, mElementArea);
+            string valueStr;// = mInfoArr[i].IsPercent ? 
+            //                    mInfoArr[i].ValueCurrent.ToString("P0") :
+            //                    UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent);
+            if(mInfoArr[i].IsPercent)
+            {
+                valueStr = mInfoArr[i].ValueCurrent.ToString("P0");
+            }
+            else
+            {
+                valueStr = UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent);
+            }
             elem.Init(i, mIconArr[i],
                       mTextInfoArr[i].Title,
                       mInfoArr[i].CurrentLevel.ToString(),
                       string.Format(mTextInfoArr[i].ContentsFormat,
-                                    UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent),
+                                    valueStr,
                                     mInfoArr[i].Duration.ToString()),
                       UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent),
                       UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent * mInfoArr[i].CostTenWeight),
@@ -128,10 +139,19 @@ public class PlayerUpgradeController : InformationLoader
         CalcData(id);
 
         // 계산된 값 적용 UI, GameLogic
-        
+
+        string valueStr;
+        if(mInfoArr[id].IsPercent)
+        {
+            valueStr = mInfoArr[id].ValueCurrent.ToString("P0");
+        }
+        else
+        {
+            valueStr = UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent);
+        }
         mElementList[id].Refresh(mInfoArr[id].CurrentLevel.ToString(),
                       string.Format(mTextInfoArr[id].ContentsFormat,
-                                    UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent),
+                                    valueStr,
                                     mInfoArr[id].Duration.ToString()),
                       UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent),
                       UnitSetter.GetUnitStr(mInfoArr[id].CostCurrent *

@@ -6,9 +6,12 @@ using UnityEngine.UI;
 public class UIController : MonoBehaviour
 {
     public static UIController Instance;
-
+    private static readonly int Movehash = Animator.StringToHash("Move");
     [SerializeField]
     private GaugeBar mGaugeBar;
+
+    [SerializeField]
+    private Animator[] mWindowAnimArr;
 
     private void Awake()
     {
@@ -20,6 +23,11 @@ public class UIController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public void ShowWindow(int id)
+    {
+        mWindowAnimArr[id].SetTrigger(Movehash);
     }
 
     public void ShowGaugeBar(double current, double max)
