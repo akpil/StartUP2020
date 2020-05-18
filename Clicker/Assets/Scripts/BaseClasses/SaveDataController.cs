@@ -37,8 +37,13 @@ public class SaveDataController : MonoBehaviour
     }
 
     protected void FixSaveData()
-    {
-        if (mUser.PlayerItemLevelArr.Length != Constants.PLAYER_ITEM_COUNT)
+    {         
+        if(mUser.PlayerItemLevelArr == null)
+        {
+            mUser.PlayerItemLevelArr = new int[Constants.PLAYER_ITEM_COUNT];
+            mUser.PlayerItemLevelArr[0] = 1;
+        }
+        else if (mUser.PlayerItemLevelArr.Length != Constants.PLAYER_ITEM_COUNT)
         {
             int[] temp = new int[Constants.PLAYER_ITEM_COUNT];
             int count = Mathf.Min(Constants.PLAYER_ITEM_COUNT, mUser.PlayerItemLevelArr.Length);
@@ -47,6 +52,21 @@ public class SaveDataController : MonoBehaviour
                 temp[i] = mUser.PlayerItemLevelArr[i];
             }
             mUser.PlayerItemLevelArr = temp;
+        }
+
+        if(mUser.SkillCooltimeArr == null)
+        {
+            mUser.SkillCooltimeArr = new float[Constants.SKILL_COUNT];
+        }
+        else if(mUser.SkillCooltimeArr.Length != Constants.SKILL_COUNT)
+        {             
+            float[] temp = new float[Constants.SKILL_COUNT];
+            int count = Mathf.Min(Constants.SKILL_COUNT, mUser.SkillCooltimeArr.Length);
+            for(int i =0; i < count; i++)
+            {
+                temp[i] = mUser.SkillCooltimeArr[i];
+            }
+            mUser.SkillCooltimeArr = temp;
         }
     }
 
@@ -61,6 +81,7 @@ public class SaveDataController : MonoBehaviour
 
         mUser.PlayerItemLevelArr = new int[Constants.PLAYER_ITEM_COUNT];
         mUser.PlayerItemLevelArr[0] = 1;
+        mUser.SkillCooltimeArr = new float[Constants.SKILL_COUNT];
     }
 
     protected void Save()

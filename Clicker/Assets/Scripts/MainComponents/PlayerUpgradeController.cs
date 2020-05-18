@@ -31,6 +31,13 @@ public class PlayerUpgradeController : InformationLoader
     [SerializeField]
     private Transform mElementArea;
 
+    [SerializeField]
+    private SkillButton[] mSkillButtonArr;
+    [SerializeField]
+    private float[] mSkillCooltimeArr;
+    [SerializeField]
+    private List<int> mSkillIndexList;
+
     private void Awake()
     {
         if(Instance == null)
@@ -51,12 +58,15 @@ public class PlayerUpgradeController : InformationLoader
 
         mIconArr = Resources.LoadAll<Sprite>(Paths.PLAYER_ITEM_ICON);
 
-        //세이브데이터 불러오기
         mLevelArr = GameController.Instance.GetPlayerItemLevelArr();
-        
-
-        for(int i = 0; i < mInfoArr.Length; i++)
+        mSkillIndexList = new List<int>();
+        for (int i = 0; i < mInfoArr.Length; i++)
         {
+            if( mInfoArr[i].Cooltime > 0)
+            {
+                mSkillIndexList.Add(i);
+            }
+            
             mInfoArr[i].CurrentLevel = mLevelArr[i];
             mInfoArr[i].CostTenWeight = (Math.Pow(mInfoArr[i].CostWeight, 10) - 1) /
                                         (mInfoArr[i].CostWeight - 1);
@@ -88,8 +98,42 @@ public class PlayerUpgradeController : InformationLoader
                       UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent * mInfoArr[i].CostTenWeight),
                       LevelUP);
             mElementList.Add(elem);
+        }        
+
+        mSkillCooltimeArr = GameController.Instance.GetSkillCooltimeArr();
+        for(int i = 0; i < mSkillButtonArr.Length; i++)
+        {
+            int skillID = mSkillIndexList[i];
+            if(mInfoArr[skillID].CurrentLevel > 0)
+            {
+                mSkillButtonArr[i].SetButtonActive(true);
+                
+            }
+            StartCoroutine(CooltimeRoutine(i, mInfoArr[skillID].Cooltime));
         }
+    }
+
+    public void ActiveSkill(int buttonID)
+    {
+        int infoID = mSkillIndexList[buttonID];
+
+        double a = mInfoArr[infoID].ValueCurrent;//스킬 발동
+
+        mSkillCooltimeArr[buttonID] = mInfoArr[infoID].Cooltime;
+        StartCoroutine(CooltimeRoutine(buttonID, mInfoArr[infoID].Cooltime));
+    }
+
+    private IEnumerator CooltimeRoutine(int buttonID, float cooltime)
+    {
+        WaitForFixedUpdate frame = new WaitForFixedUpdate();
         
+        while(mSkillCooltimeArr[buttonID] >= 0)
+        {
+            yield return frame;
+            mSkillCooltimeArr[buttonID] -= Time.fixedDeltaTime;
+            mSkillButtonArr[buttonID].ShowCooltime(mSkillCooltimeArr[buttonID],
+                                                   cooltime);
+        }
     }
 
     public void LevelUP(int id, int amount)
@@ -187,6 +231,19 @@ public class PlayerUpgradeController : InformationLoader
                         break;
                     case 2:
                         GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
+                        break;
+                    case 3:
+                    case 4:
+                        int buttonID = 0;
+                        for(int i = 0; i < mSkillIndexList.Count; i++)
+                        {
+                            if(mSkillIndexList[i] == id)
+                            {
+                                buttonID = i;
+                                break;
+                            }
+                        }
+                        mSkillButtonArr[buttonID].SetButtonActive(true);
                         break;
                     default:
                         Debug.LogError("wrong cooltime value on player stat " + id);

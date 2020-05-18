@@ -98,6 +98,11 @@ public class GameController : SaveDataController
         return mUser.PlayerItemLevelArr;
     }
 
+    public float[] GetSkillCooltimeArr()
+    {
+        return mUser.SkillCooltimeArr;
+    }
+
     private void CalcStage(int id = -1)
     {
         mMaxProgress = 10 * Math.Pow(mProgressWeight, mUser.Stage);
@@ -124,6 +129,12 @@ public class GameController : SaveDataController
         }
         else
         {
+            double touchPower = mTouchPower;
+            if (CriticalRate > UnityEngine.Random.Range(0, 1f))
+            {
+                touchPower = touchPower * (1 + CriticalValue);
+            }
+
             mUser.Progress += mTouchPower;
             if(mUser.Progress > mMaxProgress)
             {

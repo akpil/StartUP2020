@@ -45,4 +45,5 @@ public class SaveData
     public double Progress;
 
     public int[] PlayerItemLevelArr;
+    public float[] SkillCooltimeArr;
 }
