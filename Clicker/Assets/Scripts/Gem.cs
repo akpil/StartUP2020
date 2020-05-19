@@ -4,10 +4,12 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField]
     private SpriteRenderer mRenderer;
     [SerializeField]
     private Sprite[] mSprites;
+#pragma warning restore 0649
 
     private float mShiftGap;
     private int mCurrentImageIndex;

@@ -7,11 +7,13 @@ public class UIController : MonoBehaviour
 {
     public static UIController Instance;
     private static readonly int Movehash = Animator.StringToHash("Move");
+#pragma warning disable 0649
     [SerializeField]
     private GaugeBar mGaugeBar;
 
     [SerializeField]
     private Animator[] mWindowAnimArr;
+#pragma warning restore 0649
 
     private void Awake()
     {

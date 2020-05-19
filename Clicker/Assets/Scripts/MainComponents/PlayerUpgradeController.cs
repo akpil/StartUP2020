@@ -26,6 +26,7 @@ public class PlayerUpgradeController : InformationLoader
     private Sprite[] mIconArr;
 
     private List<UIElement> mElementList;
+#pragma warning disable 0649
     [SerializeField]
     private UIElement mElementPrefab;
     [SerializeField]
@@ -33,6 +34,7 @@ public class PlayerUpgradeController : InformationLoader
 
     [SerializeField]
     private SkillButton[] mSkillButtonArr;
+#pragma warning restore 0649
     [SerializeField]
     private float[] mSkillCooltimeArr;
     [SerializeField]
@@ -117,10 +119,28 @@ public class PlayerUpgradeController : InformationLoader
     {
         int infoID = mSkillIndexList[buttonID];
 
-        double a = mInfoArr[infoID].ValueCurrent;//스킬 발동
+        switch(infoID)
+        {
+            case 3:
+                GameController.Instance.PowerTouch(mInfoArr[infoID].ValueCurrent);
+                break;
+            case 4:
+                StartCoroutine(GoldBonusRoutine(mInfoArr[infoID].Duration,
+                                                mInfoArr[infoID].ValueCurrent));
+                break;
+            default:
+                Debug.LogError("wrong skill info id: " + infoID);
+                break;
+        }
 
         mSkillCooltimeArr[buttonID] = mInfoArr[infoID].Cooltime;
         StartCoroutine(CooltimeRoutine(buttonID, mInfoArr[infoID].Cooltime));
+    }
+    private IEnumerator GoldBonusRoutine(float duration, double value)
+    {
+        GameController.Instance.IncomeBonus += value;
+        yield return new WaitForSeconds(duration);
+        GameController.Instance.IncomeBonus -= value;
     }
 
     private IEnumerator CooltimeRoutine(int buttonID, float cooltime)
@@ -219,36 +239,33 @@ public class PlayerUpgradeController : InformationLoader
 
         if(mInfoArr[id].CurrentLevel > 0)
         {
-            if (mInfoArr[id].Cooltime <= 0)
+            switch (id)
             {
-                switch (id)
-                {
-                    case 0:
-                        GameController.Instance.TouchPower = mInfoArr[id].ValueCurrent;
-                        break;
-                    case 1:
-                        GameController.Instance.CriticalRate = mInfoArr[id].ValueCurrent;
-                        break;
-                    case 2:
-                        GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
-                        break;
-                    case 3:
-                    case 4:
-                        int buttonID = 0;
-                        for(int i = 0; i < mSkillIndexList.Count; i++)
+                case 0:
+                    GameController.Instance.TouchPower = mInfoArr[id].ValueCurrent;
+                    break;
+                case 1:
+                    GameController.Instance.CriticalRate = mInfoArr[id].ValueCurrent;
+                    break;
+                case 2:
+                    GameController.Instance.CriticalValue = mInfoArr[id].ValueCurrent;
+                    break;
+                case 3:
+                case 4:
+                    int buttonID = 0;
+                    for (int i = 0; i < mSkillIndexList.Count; i++)
+                    {
+                        if (mSkillIndexList[i] == id)
                         {
-                            if(mSkillIndexList[i] == id)
-                            {
-                                buttonID = i;
-                                break;
-                            }
+                            buttonID = i;
+                            break;
                         }
-                        mSkillButtonArr[buttonID].SetButtonActive(true);
-                        break;
-                    default:
-                        Debug.LogError("wrong cooltime value on player stat " + id);
-                        break;
-                }
+                    }
+                    mSkillButtonArr[buttonID].SetButtonActive(true);
+                    break;
+                default:
+                    Debug.LogError("wrong cooltime value on player stat " + id);
+                    break;
             }
         }
     }

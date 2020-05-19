@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class CharcterToUnicode : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField]
     private string mOrigin;
-
+#pragma warning restore 0649
     // Start is called before the first frame update
     void Start()
     {

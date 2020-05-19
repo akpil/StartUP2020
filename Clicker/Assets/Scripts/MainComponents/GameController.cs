@@ -35,6 +35,7 @@ public class GameController : SaveDataController
     [SerializeField]
     private double mIncomeWeight = 1.04d;
     private double mIncome;
+    public double IncomeBonus { get; set; }
 
     [SerializeField]
     private double mProgressWeight = 1.08d;
@@ -60,10 +61,10 @@ public class GameController : SaveDataController
     public double CriticalRate { get; set; }
 
     public double CriticalValue { get; set; }
-
+#pragma warning disable 0649
     [SerializeField]//temp
     private GemPool mGemPool;
-
+#pragma warning restore 0649
     [SerializeField]
     private Gem mCurrentGem;
 
@@ -118,11 +119,33 @@ public class GameController : SaveDataController
         mIncome = 5 * Math.Pow(mIncomeWeight, mUser.Stage);
     }
 
+    public void PowerTouch(double value)
+    {
+        if(value <= 0)
+        {
+            Debug.LogError("wrong power touch value " + value);
+        }
+        mUser.Progress += value;
+
+        if(mUser.Progress >= mMaxProgress)
+        {
+            mUser.Gold += mIncome * (1 + IncomeBonus);
+            mUser.Stage++;
+            mUser.Progress = 0;
+            CalcStage();
+        }
+
+        float progress = (float)(mUser.Progress / mMaxProgress);
+        mCurrentGem.SetProgress(progress);
+
+        UIController.Instance.ShowGaugeBar(mUser.Progress, mMaxProgress);
+    }
+
     public void Touch()
     {
         if (mUser.Progress >= mMaxProgress)
         {
-            mUser.Gold += mIncome;
+            mUser.Gold += mIncome * (1 + IncomeBonus);
             mUser.Stage++;
             mUser.Progress = 0;
             CalcStage();

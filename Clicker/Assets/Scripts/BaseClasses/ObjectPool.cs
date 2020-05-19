@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class ObjectPool<T> : MonoBehaviour where T : Component
 {
+#pragma warning disable 0649
     [SerializeField]
     protected T[] mOriginArr;
+#pragma warning restore 0649
     [SerializeField]
     protected List<T>[] mPools;
     // Start is called before the first frame update

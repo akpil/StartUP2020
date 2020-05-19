@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class SkillButton : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField]
     private Button mSkillButton;
     [SerializeField]
@@ -14,6 +15,7 @@ public class SkillButton : MonoBehaviour
     private Image mCooldownImage;
     [SerializeField]
     private TextMeshProUGUI mCooldownText;
+#pragma warning restore 0649
 
     public void SetButtonText(string title)
     {

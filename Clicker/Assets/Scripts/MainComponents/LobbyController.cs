@@ -6,10 +6,12 @@ using UnityEngine.SceneManagement;
 
 public class LobbyController : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField]
     private Button mStartButton;
     [SerializeField]
     private Text mStartText;
+#pragma warning restore 0649
     [SerializeField]
     private float mAlphaAnimPeriod = 2;
 

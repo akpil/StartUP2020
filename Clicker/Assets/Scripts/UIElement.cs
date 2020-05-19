@@ -6,13 +6,14 @@ using UnityEngine.UI;
 
 public class UIElement : MonoBehaviour
 {
+#pragma warning disable 0649
     [SerializeField]
     private Image mIconImage;
     [SerializeField]
     private TextMeshProUGUI mTitleText, mLevelText, mContentsText, mCostText, mTenCostText;
     [SerializeField]
     private Button mButton, mTenUpButton;
-
+#pragma warning restore 0649
     private Coroutine mButtonPopRoutine;
     private int mClickCount;
 
