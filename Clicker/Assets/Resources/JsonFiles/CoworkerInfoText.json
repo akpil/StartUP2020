@@ -1,0 +1,17 @@
+[
+  {
+    "ID": 0,
+    "Title": "톰",
+    "ContentsFormat": "{1}초 마다 {0}골드 획득"
+  },
+  {
+    "ID": 1,
+    "Title": "맥스",
+    "ContentsFormat": "{1}초 마다 {0}작업 진행 보조"
+  },
+  {
+    "ID": 2,
+    "Title": "제임스",
+    "ContentsFormat": "스킬 쿨타임 {0}초 감소"
+  }
+]

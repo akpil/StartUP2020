@@ -7,3 +7,10 @@ public enum eCostType
     Ruby,
     Soul
 }
+
+
+public enum eCalculationType
+{
+    Sum,
+    Exp
+}

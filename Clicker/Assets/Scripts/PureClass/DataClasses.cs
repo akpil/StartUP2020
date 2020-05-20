@@ -36,6 +36,39 @@ public class PlayerStatText
 }
 
 [Serializable]
+public class CoworkerInfo
+{
+    public int ID;
+    public int CurrentLevel;
+    public int MaxLevel;
+
+    public eCostType CostType;
+    public double CostBase;
+    public double CostWeight;
+    public double CostCurrent;
+    public double CostTenWeight;
+
+    public float PeriodBase;
+    public float PeriodCurrent;
+    public float PeriodUpgradeAmount;
+    public int PeriodLevelStep;
+
+    public eCalculationType ValueCalcType;
+    public double ValueBase;
+    public double ValueWeight;
+    public double ValueCurrent;
+}
+
+[Serializable]
+public class CoworkerTextInfo
+{
+    public int ID;
+    public string Title;
+    public string ContentsFormat;
+}
+
+
+[Serializable]
 public class SaveData
 {
     public double Gold;
