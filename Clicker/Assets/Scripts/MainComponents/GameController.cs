@@ -104,6 +104,11 @@ public class GameController : SaveDataController
         return mUser.SkillCooltimeArr;
     }
 
+    public int[] GetCoworkerLevelArr()
+    {
+        return mUser.CoworkerLevelArr;
+    }
+
     private void CalcStage(int id = -1)
     {
         mMaxProgress = 10 * Math.Pow(mProgressWeight, mUser.Stage);

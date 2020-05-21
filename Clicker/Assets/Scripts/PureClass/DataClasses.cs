@@ -79,4 +79,6 @@ public class SaveData
 
     public int[] PlayerItemLevelArr;
     public float[] SkillCooltimeArr;
+
+    public int[] CoworkerLevelArr;
 }
