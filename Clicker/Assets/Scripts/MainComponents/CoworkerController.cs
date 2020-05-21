@@ -226,10 +226,10 @@ public class CoworkerController : InformationLoader
                                 Math.Pow(mInfoArr[id].ValueWeight, mInfoArr[id].CurrentLevel);
         }
 
+        float periodsSub = mInfoArr[id].PeriodUpgradeAmount *
+                           (int)(mInfoArr[id].CurrentLevel / mInfoArr[id].PeriodLevelStep);
         if (mInfoArr[id].CurrentLevel > 0)
         {
-            float periodsSub = mInfoArr[id].PeriodUpgradeAmount *
-                           (int)(mInfoArr[id].PeriodLevelStep / mInfoArr[id].CurrentLevel);
             mInfoArr[id].PeriodCurrent = mInfoArr[id].PeriodBase - periodsSub;
             switch (id)
             {
