@@ -49,7 +49,7 @@ public class CoworkerController : InformationLoader
         mElementList = new List<UIElement>();
         for (int i = 0; i < mInfoArr.Length; i++)
         {
-            if(mLevelArr[i] < 0)
+            if (mLevelArr[i] < 0)
             { continue; }
             mInfoArr[i].CurrentLevel = mLevelArr[i];
 
@@ -57,9 +57,15 @@ public class CoworkerController : InformationLoader
                                         (mInfoArr[i].CostWeight - 1);
             CalcData(i);
 
+            if (mInfoArr[i].CurrentLevel > 0)
+            {
+                mCoworkerArr[i].gameObject.SetActive(true);
+                mCoworkerArr[i].StartWork(i, mInfoArr[i].PeriodCurrent);
+            }
+
             UIElement element = Instantiate(mElementPrefab, mElementArea);
             string valueStr;
-            if(mInfoArr[i].ValueCalcType == eCalculationType.Exp)
+            if (mInfoArr[i].ValueCalcType == eCalculationType.Exp)
             {
                 valueStr = UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent);
             }
@@ -80,6 +86,26 @@ public class CoworkerController : InformationLoader
 
             mElementList.Add(element);
 
+        }
+    }
+
+    public void JobFinish(int id, Vector3 effectPos)
+    {
+        Debug.Log("Job finish " + id);
+        switch(id)
+        {
+            case 0:
+                Debug.Log(mInfoArr[id].ValueCurrent);
+                GameController.Instance.Gold += mInfoArr[id].ValueCurrent;
+                break;
+            case 1:
+                GameController.Instance.PowerTouch(mInfoArr[id].ValueCurrent);
+                break;
+            case 2:// 주기동작이 아닌 동료
+                break;
+            default:
+                Debug.LogError("wrong coworker id " + id);
+                break;
         }
     }
 
@@ -127,38 +153,44 @@ public class CoworkerController : InformationLoader
         }
         mLevelArr[id] = mInfoArr[id].CurrentLevel;
 
-        if(mInfoArr[id].CurrentLevel == 1 && id + 1 < mInfoArr.Length)
+        
+        if(mInfoArr[id].CurrentLevel == 1)
         {
-            int nextID = id + 1;
-            mLevelArr[nextID] = mInfoArr[nextID].CurrentLevel = 0;
-            CalcData(nextID);
-
-            UIElement element = Instantiate(mElementPrefab, mElementArea);
-            string valueStrNext;
-            if (mInfoArr[nextID].ValueCalcType == eCalculationType.Exp)
+            mCoworkerArr[id].gameObject.SetActive(true);
+            if(id + 1 < mInfoArr.Length)
             {
-                valueStrNext = UnitSetter.GetUnitStr(mInfoArr[nextID].ValueCurrent);
-            }
-            else
-            {
-                valueStrNext = mInfoArr[nextID].ValueCurrent.ToString("N1");
-            }
+                int nextID = id + 1;
+                mLevelArr[nextID] = mInfoArr[nextID].CurrentLevel = 0;
+                CalcData(nextID);
 
-            element.Init(nextID, mIconArr[nextID],
-                      mTextInfoArr[nextID].Title,
-                      mInfoArr[nextID].CurrentLevel.ToString(),
-                      string.Format(mTextInfoArr[nextID].ContentsFormat,
-                                    valueStrNext,
-                                    mInfoArr[nextID].PeriodCurrent.ToString()),
-                      UnitSetter.GetUnitStr(mInfoArr[nextID].CostCurrent),
-                      UnitSetter.GetUnitStr(mInfoArr[nextID].CostCurrent * mInfoArr[nextID].CostTenWeight),
-                      LevelUP);
+                UIElement element = Instantiate(mElementPrefab, mElementArea);
+                string valueStrNext;
+                if (mInfoArr[nextID].ValueCalcType == eCalculationType.Exp)
+                {
+                    valueStrNext = UnitSetter.GetUnitStr(mInfoArr[nextID].ValueCurrent);
+                }
+                else
+                {
+                    valueStrNext = mInfoArr[nextID].ValueCurrent.ToString("N1");
+                }
 
-            mElementList.Add(element);
+                element.Init(nextID, mIconArr[nextID],
+                          mTextInfoArr[nextID].Title,
+                          mInfoArr[nextID].CurrentLevel.ToString(),
+                          string.Format(mTextInfoArr[nextID].ContentsFormat,
+                                        valueStrNext,
+                                        mInfoArr[nextID].PeriodCurrent.ToString()),
+                          UnitSetter.GetUnitStr(mInfoArr[nextID].CostCurrent),
+                          UnitSetter.GetUnitStr(mInfoArr[nextID].CostCurrent * mInfoArr[nextID].CostTenWeight),
+                          LevelUP);
+
+                mElementList.Add(element);
+            }
         }
 
         CalcData(id);
 
+        mCoworkerArr[id].StartWork(id, mInfoArr[id].PeriodCurrent);
         // 계산된 값 적용 UI, GameLogic
 
         string valueStr;
@@ -196,13 +228,17 @@ public class CoworkerController : InformationLoader
 
         if (mInfoArr[id].CurrentLevel > 0)
         {
+            float periodsSub = mInfoArr[id].PeriodUpgradeAmount *
+                           (int)(mInfoArr[id].PeriodLevelStep / mInfoArr[id].CurrentLevel);
+            mInfoArr[id].PeriodCurrent = mInfoArr[id].PeriodBase - periodsSub;
             switch (id)
             {
-                case 0:
+                case 0://주기 동작을 하는 동료
                     break;
-                case 1:
+                case 1://주기 동작을 하는 동료
                     break;
                 case 2:
+                    //TODO 스킬 쿨타임 감소
                     break;
                 default:
                     Debug.LogError("wrong id value on coworker " + id);
