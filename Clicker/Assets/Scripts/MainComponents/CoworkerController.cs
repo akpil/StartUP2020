@@ -238,7 +238,7 @@ public class CoworkerController : InformationLoader
                 case 1://주기 동작을 하는 동료
                     break;
                 case 2:
-                    //TODO 스킬 쿨타임 감소
+                    PlayerUpgradeController.Instance.SkillDiscount = (float)mInfoArr[id].ValueCurrent;
                     break;
                 default:
                     Debug.LogError("wrong id value on coworker " + id);

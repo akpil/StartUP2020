@@ -6,7 +6,7 @@ public class TouchManager : MonoBehaviour
 {
     private Camera mMainCamera;
     [SerializeField]
-    private GameObject mDummy;
+    private EffectPool mEffectPool;
     // Start is called before the first frame update
     void Start()
     {
@@ -60,8 +60,8 @@ public class TouchManager : MonoBehaviour
             {
                 if(gameObject == hit.collider.gameObject)
                 {
-                    GameObject gameObj = Instantiate(mDummy);
-                    gameObj.transform.position = hit.point;
+                    Timer effect = mEffectPool.GetFromPool();
+                    effect.transform.position = hit.point;
                     GameController.Instance.Touch();
                 }
             }
@@ -75,8 +75,8 @@ public class TouchManager : MonoBehaviour
         Vector3 pos;
         if(CheckTouch(out pos))
         {
-            GameObject gameObj = Instantiate(mDummy);
-            gameObj.transform.position = pos;
+            Timer effect = mEffectPool.GetFromPool();
+            effect.transform.position = pos;
             GameController.Instance.Touch();
         }
         

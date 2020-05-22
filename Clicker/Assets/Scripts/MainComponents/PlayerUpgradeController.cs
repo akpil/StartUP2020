@@ -36,9 +36,22 @@ public class PlayerUpgradeController : InformationLoader
     private SkillButton[] mSkillButtonArr;
 #pragma warning restore 0649
     [SerializeField]
-    private float[] mSkillCooltimeArr;
+    private float[] mSkillCooltimeArr, mSkillMaxCooltimeArr;
     [SerializeField]
     private List<int> mSkillIndexList;
+    private float mSkillDiscount;
+    public float SkillDiscount
+    {
+        get { return mSkillDiscount; }
+        set
+        {
+            mSkillDiscount = value;
+            for(int i = 0; i < mSkillMaxCooltimeArr.Length; i++)
+            {
+                mSkillMaxCooltimeArr[i] = mInfoArr[mSkillIndexList[i]].Cooltime - mSkillDiscount;
+            }
+        }
+    }
 
     private void Awake()
     {
@@ -61,6 +74,9 @@ public class PlayerUpgradeController : InformationLoader
         mIconArr = Resources.LoadAll<Sprite>(Paths.PLAYER_ITEM_ICON);
 
         mLevelArr = GameController.Instance.GetPlayerItemLevelArr();
+        mSkillCooltimeArr = GameController.Instance.GetSkillCooltimeArr();
+        mSkillMaxCooltimeArr = GameController.Instance.GetSkillMaxCooltimeArr();
+
         mSkillIndexList = new List<int>();
         for (int i = 0; i < mInfoArr.Length; i++)
         {
@@ -102,7 +118,7 @@ public class PlayerUpgradeController : InformationLoader
             mElementList.Add(elem);
         }        
 
-        mSkillCooltimeArr = GameController.Instance.GetSkillCooltimeArr();
+        
         for(int i = 0; i < mSkillButtonArr.Length; i++)
         {
             int skillID = mSkillIndexList[i];
@@ -111,7 +127,7 @@ public class PlayerUpgradeController : InformationLoader
                 mSkillButtonArr[i].SetButtonActive(true);
                 
             }
-            StartCoroutine(CooltimeRoutine(i, mInfoArr[skillID].Cooltime));
+            StartCoroutine(CooltimeRoutine(i, mSkillMaxCooltimeArr[i]));
         }
     }
 
@@ -133,8 +149,8 @@ public class PlayerUpgradeController : InformationLoader
                 break;
         }
 
-        mSkillCooltimeArr[buttonID] = mInfoArr[infoID].Cooltime;
-        StartCoroutine(CooltimeRoutine(buttonID, mInfoArr[infoID].Cooltime));
+        mSkillCooltimeArr[buttonID] = mSkillMaxCooltimeArr[buttonID];
+        StartCoroutine(CooltimeRoutine(buttonID, mSkillMaxCooltimeArr[buttonID]));
     }
     private IEnumerator GoldBonusRoutine(float duration, double value)
     {
@@ -261,6 +277,7 @@ public class PlayerUpgradeController : InformationLoader
                             break;
                         }
                     }
+                    mSkillMaxCooltimeArr[buttonID] = mInfoArr[id].Cooltime - mSkillDiscount;
                     mSkillButtonArr[buttonID].SetButtonActive(true);
                     break;
                 default:

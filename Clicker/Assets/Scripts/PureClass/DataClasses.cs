@@ -79,6 +79,7 @@ public class SaveData
 
     public int[] PlayerItemLevelArr;
     public float[] SkillCooltimeArr;
+    public float[] SkillMaxCooltimeArr;
 
     public int[] CoworkerLevelArr;
 }
