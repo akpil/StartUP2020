@@ -1,0 +1,27 @@
+[
+  {
+    "ID": 0,
+    "Title": "Touch",
+    "ContentsFormat": "터치 당 {0} 만큼 작업이 진행됩니다."
+  },
+  {
+    "ID": 1,
+    "Title": "Ooops",
+    "ContentsFormat": "{0} 확률로 작업 크리티컬이 발생합니다."
+  },
+  {
+    "ID": 2,
+    "Title": "Yeeee",
+    "ContentsFormat": "크리티컬 발생 시 기본작업에 {0} 만큼 추가로 작업이 진행됩니다."
+  },
+  {
+    "ID": 3,
+    "Title": "G-gun",
+    "ContentsFormat": "발동시 {0} 만큼 작업이 진행됩니다."
+  },
+  {
+    "ID": 4,
+    "Title": "Golden thunder",
+    "ContentsFormat": "발동시 {1} 초 동안 {0} 의 추가수입이 들어옵니다."
+  }
+]

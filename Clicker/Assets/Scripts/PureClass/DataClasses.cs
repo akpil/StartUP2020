@@ -72,6 +72,8 @@ public class CoworkerTextInfo
 public class SaveData
 {
     public double Gold;
+    public double Soul;
+    public double Crystal;
 
     public int Stage;
     public int LastGemID;

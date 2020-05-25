@@ -38,15 +38,8 @@ public class CoworkerController : InformationLoader
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void Load()
     {
-        LoadJson(out mInfoArr, Paths.COWORKER_INFO_TABLE);
-        LoadJson(out mTextInfoArr, Paths.COWORKER_TEXT_INFO_TABLE);
-
-        mLevelArr = GameController.Instance.GetCoworkerLevelArr();
-
-        mElementList = new List<UIElement>();
         for (int i = 0; i < mInfoArr.Length; i++)
         {
             if (mLevelArr[i] < 0)
@@ -85,21 +78,52 @@ public class CoworkerController : InformationLoader
                       LevelUP);
 
             mElementList.Add(element);
-
         }
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        LoadJson(out mInfoArr, Paths.COWORKER_INFO_TABLE);
+        LoadJson(out mTextInfoArr,
+            Paths.COWORKER_TEXT_INFO_TABLE +
+            Paths.LANGUAGE_TYPE_ARR[GameController.Instance.LanguageType]);
+
+        mLevelArr = GameController.Instance.GetCoworkerLevelArr();
+
+        mElementList = new List<UIElement>();
+        Load();
+    }
+
+    public void Rebirth(int[] newLevelArr)
+    {
+        mLevelArr = newLevelArr;
+        for(int i = 0; i < mElementList.Count; i++)
+        {
+            Destroy(mElementList[i].gameObject);
+            mCoworkerArr[i].gameObject.SetActive(false);
+        }
+        mElementList.Clear();
+
+        Load();
     }
 
     public void JobFinish(int id, Vector3 effectPos)
     {
         Debug.Log("Job finish " + id);
+        Sprite icon = null;
+        string valueText = "";
         switch(id)
         {
             case 0:
                 Debug.Log(mInfoArr[id].ValueCurrent);
                 GameController.Instance.Gold += mInfoArr[id].ValueCurrent;
+                //icon = mIconArr[0];
+                valueText = UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent);
                 break;
             case 1:
                 GameController.Instance.PowerTouch(mInfoArr[id].ValueCurrent);
+                valueText = UnitSetter.GetUnitStr(mInfoArr[id].ValueCurrent);
                 break;
             case 2:// 주기동작이 아닌 동료
                 break;
@@ -107,6 +131,10 @@ public class CoworkerController : InformationLoader
                 Debug.LogError("wrong coworker id " + id);
                 break;
         }
+        TextEffect effect = TextEffectPool.Instance.GetFromPool();
+        effect.SetText(valueText);
+        //effect.SetIcon(icon);
+        effect.transform.position = effectPos;
     }
 
     public void LevelUP(int id, int amount)

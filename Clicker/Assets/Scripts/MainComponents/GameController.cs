@@ -68,6 +68,8 @@ public class GameController : SaveDataController
     [SerializeField]
     private Gem mCurrentGem;
 
+    public int LanguageType { get; set; }
+
     private void Awake()
     {
         if(Instance == null)
@@ -75,6 +77,17 @@ public class GameController : SaveDataController
             Instance = this;
             DontDestroyOnLoad(gameObject);
             LoadGame();
+            if(Application.systemLanguage == SystemLanguage.Korean)
+            {
+                Debug.Log("Kor" + (int)Application.systemLanguage);
+                LanguageType = 0;
+            }
+            else
+            {
+                Debug.Log("Non Kor" + (int)Application.systemLanguage);
+                LanguageType = 1;
+            }
+            LanguageType = 1;
         }
         else
         {
@@ -114,9 +127,94 @@ public class GameController : SaveDataController
         return mUser.CoworkerLevelArr;
     }
 
+    public void Rebirth()
+    {
+        if(mUser.Stage >= 100)
+        {
+            #region 소울 지급
+            double reward = mUser.Stage * 2;
+            int levelTotal = 0;
+            for (int i = 0; i < mUser.PlayerItemLevelArr.Length; i++)
+            {
+                levelTotal += mUser.PlayerItemLevelArr[i];
+            }
+            for (int i = 0; i < mUser.CoworkerLevelArr.Length; i++)
+            {
+                if (mUser.CoworkerLevelArr[i] > 0)
+                {
+                    levelTotal += mUser.CoworkerLevelArr[i];
+                }
+            }
+            reward += levelTotal;
+            mUser.Soul += reward;
+            #endregion
+
+            #region 레벨 & 스킬 쿨타임 초기화
+            mUser.PlayerItemLevelArr = new int[Constants.PLAYER_ITEM_COUNT];
+            mUser.PlayerItemLevelArr[0] = 1;
+            mUser.SkillCooltimeArr = new float[Constants.SKILL_COUNT];
+            mUser.SkillMaxCooltimeArr = new float[Constants.SKILL_COUNT];
+
+            mUser.CoworkerLevelArr = new int[Constants.COWORKER_COUNT];
+            for (int i = 0; i < mUser.CoworkerLevelArr.Length; i++)
+            {
+                mUser.CoworkerLevelArr[i] = -1;
+            }
+            mUser.CoworkerLevelArr[0] = 0;
+            #endregion
+
+            PlayerUpgradeController.Instance.Rebirth(mUser.PlayerItemLevelArr,
+                                                     mUser.SkillCooltimeArr,
+                                                     mUser.SkillMaxCooltimeArr);
+            CoworkerController.Instance.Rebirth(mUser.CoworkerLevelArr);
+            mUser.Gold = 0;
+            mUser.Stage = 0;
+            mUser.Progress = 0;
+            mCurrentGem.gameObject.SetActive(false);
+            CalcStage();
+
+            UIController.Instance.ShowGaugeBar(mUser.Progress, mMaxProgress);
+            //show gold
+            //show soul
+        }
+        else
+        {
+            Debug.Log("환생 조건이 충족되지 않았습니다."); // Popup
+        }
+    }
+
+    private IEnumerator BossCountDown(float time)
+    {
+        WaitForFixedUpdate frame = new WaitForFixedUpdate();
+        while(time > 0)
+        {
+            yield return frame;
+            time -= Time.fixedDeltaTime;
+            // 보스 게이지 갱신
+        }
+        mBossCountDown = null;
+        //패널티 부여
+    }
+    private Coroutine mBossCountDown;
     private void CalcStage(int id = -1)
     {
-        mMaxProgress = 10 * Math.Pow(mProgressWeight, mUser.Stage);
+        if (mUser.Stage > 0 && mUser.Stage % 10 == 0)
+        {
+            mMaxProgress = 100 * Math.Pow(mProgressWeight, mUser.Stage);
+            float bossTime = 30;
+            // 보스 게이지 갱신
+            mBossCountDown = StartCoroutine(BossCountDown(bossTime));
+        }
+        else
+        {
+            mMaxProgress = 10 * Math.Pow(mProgressWeight, mUser.Stage);
+            if(mBossCountDown != null)
+            {
+                StopCoroutine(mBossCountDown);
+                mBossCountDown = null;
+            }
+        }
+        
         if(mCurrentGem != null)
         {
             mCurrentGem.gameObject.SetActive(false);

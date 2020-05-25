@@ -69,7 +69,9 @@ public class PlayerUpgradeController : InformationLoader
     void Start()
     {
         LoadJson(out mInfoArr, Paths.PLAYER_ITEM_TABLE);
-        LoadJson(out mTextInfoArr, Paths.PLAYER_ITEM_TEXT_TABLE);        
+        LoadJson(out mTextInfoArr, 
+            Paths.PLAYER_ITEM_TEXT_TABLE +
+            Paths.LANGUAGE_TYPE_ARR[GameController.Instance.LanguageType]);
 
         mIconArr = Resources.LoadAll<Sprite>(Paths.PLAYER_ITEM_ICON);
 
@@ -80,11 +82,11 @@ public class PlayerUpgradeController : InformationLoader
         mSkillIndexList = new List<int>();
         for (int i = 0; i < mInfoArr.Length; i++)
         {
-            if( mInfoArr[i].Cooltime > 0)
+            if (mInfoArr[i].Cooltime > 0)
             {
                 mSkillIndexList.Add(i);
             }
-            
+
             mInfoArr[i].CurrentLevel = mLevelArr[i];
             mInfoArr[i].CostTenWeight = (Math.Pow(mInfoArr[i].CostWeight, 10) - 1) /
                                         (mInfoArr[i].CostWeight - 1);
@@ -92,13 +94,28 @@ public class PlayerUpgradeController : InformationLoader
         }
 
         mElementList = new List<UIElement>();
-        for(int i= 0; i < mInfoArr.Length; i++)
+        Load();
+
+        for (int i = 0; i < mSkillButtonArr.Length; i++)
+        {
+            int skillID = mSkillIndexList[i];
+            if (mInfoArr[skillID].CurrentLevel > 0)
+            {
+                mSkillButtonArr[i].SetButtonActive(true);
+            }
+            StartCoroutine(CooltimeRoutine(i, mSkillMaxCooltimeArr[i]));
+        }
+    }
+
+    private void Load()
+    {
+        for (int i = 0; i < mInfoArr.Length; i++)
         {
             UIElement elem = Instantiate(mElementPrefab, mElementArea);
             string valueStr;// = mInfoArr[i].IsPercent ? 
             //                    mInfoArr[i].ValueCurrent.ToString("P0") :
             //                    UnitSetter.GetUnitStr(mInfoArr[i].ValueCurrent);
-            if(mInfoArr[i].IsPercent)
+            if (mInfoArr[i].IsPercent)
             {
                 valueStr = mInfoArr[i].ValueCurrent.ToString("P0");
             }
@@ -116,19 +133,27 @@ public class PlayerUpgradeController : InformationLoader
                       UnitSetter.GetUnitStr(mInfoArr[i].CostCurrent * mInfoArr[i].CostTenWeight),
                       LevelUP);
             mElementList.Add(elem);
-        }        
+        }
+    }
 
-        
+    public void Rebirth(int[] newLevelArr, float[] skillCool, float[] skillMaxCool)
+    {
+        mLevelArr = newLevelArr;
+        mSkillCooltimeArr = skillCool;
+        mSkillMaxCooltimeArr = skillMaxCool;
+
+        for (int i = 0; i < mElementList.Count; i++)
+        {
+            Destroy(mElementList[i].gameObject);
+        }
+        mElementList.Clear();
+
         for(int i = 0; i < mSkillButtonArr.Length; i++)
         {
-            int skillID = mSkillIndexList[i];
-            if(mInfoArr[skillID].CurrentLevel > 0)
-            {
-                mSkillButtonArr[i].SetButtonActive(true);
-                
-            }
-            StartCoroutine(CooltimeRoutine(i, mSkillMaxCooltimeArr[i]));
+            mSkillButtonArr[i].SetButtonActive(false);
         }
+
+        Load();
     }
 
     public void ActiveSkill(int buttonID)

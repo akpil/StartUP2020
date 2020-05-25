@@ -114,6 +114,8 @@ public class SaveDataController : MonoBehaviour
     {
         mUser = new SaveData();
         mUser.Gold = 0;
+        mUser.Soul = 0;
+        mUser.Crystal = 0;
 
         mUser.Stage = 0;
         mUser.LastGemID = -1;
