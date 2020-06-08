@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CSVLoader : MonoBehaviour
@@ -10,6 +11,30 @@ public class CSVLoader : MonoBehaviour
     private void Start()
     {
         LoadCSV(out InfoArr, "CsvFiles/StoryPage");
+        //Dictionary<int, int> dic = new Dictionary<int, int>();
+        //for (int i = 0; i < InfoArr.Length; i++)
+        //{
+        //    dic[InfoArr[i].ID] = i;
+        //}
+        //int[] keyArr = dic.Keys.ToArray();
+        //for(int i = 0; i < keyArr.Length; i++)
+        //{
+        //    Debug.LogFormat("key {0} // value{1}", keyArr[i], dic[keyArr[i]]);
+        //}
+
+        //Item[] itemArr = new Item[10];
+        //Dictionary<eRankType, List<int>> rankDic = new Dictionary<eRankType, List<int>>();
+        //for(int i = 0; i < itemArr.Length; i++)
+        //{
+        //    if(!rankDic.ContainsKey(itemArr[i].RankType))
+        //    {
+        //        rankDic[itemArr[i].RankType] = new List<int>();
+        //    }
+        //    rankDic[itemArr[i].RankType].Add(i);
+        //}
+        //List<int> list = rankDic[eRankType.Epic];
+        //int pickedID = list[UnityEngine.Random.Range(0, list.Count)];
+        //int pickedID2 = rankDic[eRankType.Epic][UnityEngine.Random.Range(0, rankDic[eRankType.Epic].Count)];
     }
 
     public void LoadCSV<T>(out T[] OutputArr, string path) where T : new()
@@ -50,6 +75,11 @@ public class CSVLoader : MonoBehaviour
 
         for (int i = 0; i < lineData.Length - 2; i++)
         {
+            lineData[i + 1] = lineData[i + 1].Replace("\"\"", "\"");
+            lineData[i + 1] = lineData[i + 1].Replace("\"[", "[");
+            lineData[i + 1] = lineData[i + 1].Replace("]\"", "]");
+            lineData[i + 1] = lineData[i + 1].Replace("\"{", "{");
+            lineData[i + 1] = lineData[i + 1].Replace("}\"", "}");
             string[] currentLineSplited = GenerateLineSplit(lineData[i + 1]);
 
             OutputArr[i] = new T();
@@ -246,12 +276,7 @@ public class CSVLoader : MonoBehaviour
 
         if (currentLine.IndexOfAny(MarkArr) >= 0)
         {
-            currentLine = currentLine.Replace("\"\"", "\"");
-            currentLine = currentLine.Replace("\"\"", "\"");
-            currentLine = currentLine.Replace("\"[", "[");
-            currentLine = currentLine.Replace("]\"", "]");
-            currentLine = currentLine.Replace("\"{", "{");
-            currentLine = currentLine.Replace("}\"", "}");
+            
             Debug.Log(currentLine);
             List<string> result = new List<string>();
 
@@ -316,7 +341,11 @@ public class CSVLoader : MonoBehaviour
                 }
 
                 commaIndex = currentLine.IndexOf(',', startIndex);
-
+                if (startIndex == commaIndex && startIndex < currentLine.Length)
+                {
+                    startIndex++;
+                    commaIndex = currentLine.IndexOf(',', startIndex);
+                }
                 // 1. commaIndex < markIndex
                 // 2. !(commaIndex < markIndex)
 
