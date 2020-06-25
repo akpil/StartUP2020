@@ -15,6 +15,9 @@ public class InventoryController : MonoBehaviour
     private InventorySlot mSlotPrefab;
     [SerializeField]
     private Transform mSlotParents;
+
+    [SerializeField]
+    private UnityEngine.UI.Image mDragTarget;
 #pragma warning restore 0649
 
     private InventorySlot[] mSlotArr;
@@ -30,7 +33,7 @@ public class InventoryController : MonoBehaviour
             for(int i = 0; i < SLOT_COUNT; i++)
             {
                 mSlotArr[i] = Instantiate(mSlotPrefab, mSlotParents);
-                mSlotArr[i].Init(i, null);
+                mSlotArr[i].Init(i, null, mDragTarget);
             }
         }
         else
@@ -42,6 +45,13 @@ public class InventoryController : MonoBehaviour
     public void AddItem(ItemData data)
     {
         mItemInfoList.Add(data);
+    }
+
+    public bool StartDragging(int id)
+    {
+        Debug.Log("Start Dragging " + id);
+        //return mItemInfoList[id] != null && mItemInfoList[id].ID >= 0;
+        return id < mItemInfoList.Count;
     }
 
     // Start is called before the first frame update
