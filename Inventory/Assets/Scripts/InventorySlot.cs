@@ -13,6 +13,7 @@ public class InventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     private int mID;
     private Image mDragTarget;
     private bool mbDragging;
+    
 
     public void Init(int id, Sprite image, Image dragTarget)
     {
@@ -63,6 +64,7 @@ public class InventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             mItemImage.color = Color.white;
             mDragTarget.gameObject.SetActive(false);
             mbDragging = false;
+            InventoryController.Instance.EndDragging();
         }
     }
 }

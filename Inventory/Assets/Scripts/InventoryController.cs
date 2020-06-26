@@ -18,8 +18,11 @@ public class InventoryController : MonoBehaviour
 
     [SerializeField]
     private UnityEngine.UI.Image mDragTarget;
-#pragma warning restore 0649
 
+    [SerializeField]
+    private EquipmentSlot[] mEquipSlotArr;
+#pragma warning restore 0649
+    private int mDraggingID, mEquipSlotID;
     private InventorySlot[] mSlotArr;
 
     private void Awake()
@@ -42,25 +45,52 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+    // Start is called before the first frame update
+    void Start()
+    {
+        mDraggingID = -1;
+        mEquipSlotID = -1;
+        for (int i = 0; i < 31; i++)
+        {
+            mItemInfoList.Add(mItemController.GetItem(i));
+            mSlotArr[i].SetSprite(mItemController.GetItemSprite(i));
+        }
+        for (int i = 0; i < mEquipSlotArr.Length; i++)
+        {
+            mEquipSlotArr[i].Init(i);
+        }
+    }
+
     public void AddItem(ItemData data)
     {
         mItemInfoList.Add(data);
     }
 
+    public void SetEquipSlotID(int id)
+    {
+        mEquipSlotID = id;
+    }
+
     public bool StartDragging(int id)
     {
         Debug.Log("Start Dragging " + id);
+        mDraggingID = id;
         //return mItemInfoList[id] != null && mItemInfoList[id].ID >= 0;
         return id < mItemInfoList.Count;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void EndDragging()
     {
-        for(int i =0; i < 31; i++)
+        if (mDraggingID >= 0 && mEquipSlotID >= 0)
         {
-            mItemInfoList.Add(mItemController.GetItem(i));
-            mSlotArr[i].SetSprite(mItemController.GetItemSprite(i));
+            ItemData item = mItemInfoList[mDraggingID];
+            EquipmentSlot equipSlot = mEquipSlotArr[mEquipSlotID];
+            if (item.ItemType == equipSlot.GetEquipType())
+            {
+                equipSlot.SetSprite(mItemController.GetItemSprite(item.ID));
+            }
         }
     }
+
+
 }
